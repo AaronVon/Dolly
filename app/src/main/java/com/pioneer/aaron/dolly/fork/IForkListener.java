@@ -5,7 +5,7 @@ package com.pioneer.aaron.dolly.fork;
  */
 
 public interface IForkListener {
-    void onProgress(int progress);
+    void onProgress(int percentProgress, int realProgress);
 
     void onCompleted();
 

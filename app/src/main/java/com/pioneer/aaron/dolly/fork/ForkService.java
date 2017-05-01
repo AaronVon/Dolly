@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.NotificationCompat;
 import android.widget.Toast;
 
@@ -28,11 +27,11 @@ public class ForkService extends Service {
 
     private IForkListener mForkListener = new IForkListener() {
         @Override
-        public void onProgress(int progress) {
+        public void onProgress(int percentProgress, int realProgress) {
             getNotificationManager()
                     .notify(1,
                             getNotification(getResources().getString(R.string.fork_task_forking),
-                                    progress)
+                                    percentProgress, realProgress)
                     );
         }
 
@@ -41,7 +40,7 @@ public class ForkService extends Service {
             mForkTask = null;
             stopForeground(true);
             getNotificationManager()
-                    .notify(1, getNotification(getResources().getString(R.string.fork_task_completed), -1));
+                    .notify(1, getNotification(getResources().getString(R.string.fork_task_completed), -1, -1));
         }
 
         @Override
@@ -57,7 +56,7 @@ public class ForkService extends Service {
             mForkTask = null;
             stopForeground(true);
             getNotificationManager()
-                    .notify(1, getNotification(getResources().getString(R.string.fork_task_failed), -1));
+                    .notify(1, getNotification(getResources().getString(R.string.fork_task_failed), -1, -1));
             Toast.makeText(ForkService.this, getResources().getString(R.string.fork_task_failed), Toast.LENGTH_SHORT).show();
         }
     };
@@ -126,7 +125,7 @@ public class ForkService extends Service {
         return (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
     }
 
-    private Notification getNotification(String title, int progress) {
+    private Notification getNotification(String title, int progress, int realProgress) {
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
@@ -135,7 +134,7 @@ public class ForkService extends Service {
         builder.setContentIntent(pendingIntent);
         builder.setContentTitle(title);
         if (progress > 0) {
-            builder.setContentText(progress + "/" + total);
+            builder.setContentText(realProgress + "/" + total);
             builder.setProgress(100, progress, false);
         }
         return builder.build();

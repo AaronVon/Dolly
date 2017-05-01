@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
 import com.pioneer.aaron.dolly.utils.Matrix;
@@ -38,7 +39,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
     public ForkTask(IForkListener forkListener, Context context) {
         this.mForkListener = forkListener;
         this.mContext = context;
-        mLastProgress = -1 ;
+        mLastProgress = -1;
         mForkCanceled = false;
     }
 
@@ -98,7 +99,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             if (mForkCanceled) {
                 return TYPE_CANCELED;
             }
-            if (bulkSize >= FORK_BULK_SIZE || i >= quantity) {
+            if (bulkSize >= FORK_BULK_SIZE || i >= quantity - 1) {
                 try {
                     mContext.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
                 } catch (RemoteException e) {
@@ -106,12 +107,12 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                 } catch (OperationApplicationException e) {
                     e.printStackTrace();
                 }
+                operations.clear();
                 bulkSize = 0;
                 int progress = (int) (i * 100 / quantity);
-                publishProgress(progress);
+                publishProgress(progress, i + 1);
             }
         }
-
         return TYPE_COMPLETED;
     }
 
@@ -150,7 +151,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             if (mForkCanceled) {
                 return TYPE_CANCELED;
             }
-            if (bulkSize >= FORK_BULK_SIZE || i >= quantity) {
+            if (bulkSize >= FORK_BULK_SIZE || i >= quantity - 1) {
                 try {
                     mContext.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
                 } catch (RemoteException e) {
@@ -158,9 +159,10 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                 } catch (OperationApplicationException e) {
                     e.printStackTrace();
                 }
+                operations.clear();
                 bulkSize = 0;
                 int progress = (int) (i * 100 / quantity);
-                publishProgress(progress);
+                publishProgress(progress, i + 1);
             }
         }
         return TYPE_COMPLETED;
@@ -197,7 +199,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             if (mForkCanceled) {
                 return TYPE_CANCELED;
             }
-            if (bulkSize >= FORK_BULK_SIZE || i >= quantity) {
+            if (bulkSize >= FORK_BULK_SIZE || i >= quantity - 1) {
                 try {
                     mContext.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operations);
                 } catch (RemoteException e) {
@@ -205,9 +207,10 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                 } catch (OperationApplicationException e) {
                     e.printStackTrace();
                 }
+                operations.clear();
                 bulkSize = 0;
                 int progress = (int) (i * 100 / quantity);
-                publishProgress(progress);
+                publishProgress(progress, i + 1);
             }
         }
 
@@ -218,7 +221,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
     protected void onProgressUpdate(Integer... values) {
         int progress = values[0];
         if (progress > mLastProgress) {
-            mForkListener.onProgress(progress);
+            mForkListener.onProgress(progress, values[1]);
             mLastProgress = progress;
         }
     }
