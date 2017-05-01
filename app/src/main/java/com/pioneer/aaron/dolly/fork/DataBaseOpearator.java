@@ -9,6 +9,7 @@ import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.os.RemoteException;
 import android.provider.CallLog;
+import android.provider.ContactsContract;
 
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
 import com.pioneer.aaron.dolly.utils.Matrix;
@@ -147,4 +148,41 @@ public class DataBaseOpearator {
         }
     }
 
+    public void forkContacts(int quantity) {
+        if (mContext == null || quantity <= 0) {
+            return;
+        }
+        Matrix.setNameRes(mContext, false);
+
+        ArrayList<ContentProviderOperation> operations = new ArrayList<>();
+
+        for (int i = 0; i < quantity; ++i) {
+            int rawContacInsertIndex = operations.size();
+            operations.add(ContentProviderOperation
+                    .newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                    .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+                    .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+                    .build());
+            operations.add(ContentProviderOperation
+                    .newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContacInsertIndex)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, Matrix.getRandomName())
+                    .build());
+            operations.add(ContentProviderOperation
+                    .newInsert(ContactsContract.Data.CONTENT_URI)
+                    .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContacInsertIndex)
+                    .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                    .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, Matrix.getRandomPhoneNum())
+                    .build());
+        }
+
+        try {
+            mContext.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operations);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (OperationApplicationException e) {
+            e.printStackTrace();
+        }
+    }
 }

@@ -30,7 +30,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
     private static final String TAG = "Aaron";
     private IForkCallLogContract.Presenter mPresenter;
 
-    private static final String CALLLOG_DEFAULT_QUANTITY = "2";
+    private static final int CALLLOG_DEFAULT_QUANTITY = 2;
     EditText mPhoneNumberEditText;
     Button mStartForkButton;
     RadioGroup mCallLogTypeGroup;
@@ -129,7 +129,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         mRollDiceCheckBox = (CheckBox) findViewById(R.id.call_log_roll_dice);
         mRollDiceCheckBox.setOnCheckedChangeListener(mCheckedChangeListener);
         mCallLogQuantityEditText = (EditText) findViewById(R.id.call_log_quantity_edtxt);
-        mCallLogQuantityEditText.setText(CALLLOG_DEFAULT_QUANTITY);
+        mCallLogQuantityEditText.setText(String.valueOf(CALLLOG_DEFAULT_QUANTITY));
     }
 
     @Override

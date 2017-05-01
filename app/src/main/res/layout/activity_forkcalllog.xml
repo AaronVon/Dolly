@@ -4,7 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:padding="@dimen/activity_horizontal_margin">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -35,6 +36,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/call_log_outgoing"
                 android:textAllCaps="false"/>
 
@@ -43,6 +46,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/call_log_rejected"
                 android:textAllCaps="false"/>
 
@@ -51,6 +56,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/call_log_incoming"
                 android:textAllCaps="false"/>
 
@@ -59,6 +66,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/call_log_missed"
                 android:textAllCaps="false"/>
         </RadioGroup>
@@ -67,6 +76,7 @@
             android:id="@+id/call_log_volte_feature_radiogroup"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:baselineAligned="false"
             android:orientation="horizontal"
             android:visibility="gone">
 
@@ -74,6 +84,8 @@
                 android:id="@+id/call_log_volte_radiobtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/call_log_volte"
                 android:textAllCaps="false"/>
 
@@ -81,6 +93,8 @@
                 android:id="@+id/call_log_volte_hd_radiobtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/call_log_volte_hd"
                 android:textAllCaps="false"/>
 
@@ -88,6 +102,8 @@
                 android:id="@+id/call_log_volte_none_radiobtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
                 android:text="@string/call_log_volte_none"
                 android:textAllCaps="false"/>
 

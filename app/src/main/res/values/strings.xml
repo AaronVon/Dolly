@@ -20,8 +20,10 @@
     <string name="call_log_roll_dice">All Random</string>
 
     <string name="start_fork_call_logs">Start Fork</string>
+    <string name="start_fork_contact">Start Fork</string>
     <string name="permission_request_snackbar">OK</string>
     <string name="fork_call_log_snackbar">OK</string>
-    <string name="phone_num_blank_msg">Input a phone number.</string>
-    <string name="call_log_quantity_msg">Input a quantity.</string>
+    <string name="phone_num_blank_msg">Input a valid phone number.</string>
+    <string name="call_log_quantity_msg">Input a valid quantity.</string>
+    <string name="contact_quantity_msg">Input a valid quantity.</string>
 </resources>

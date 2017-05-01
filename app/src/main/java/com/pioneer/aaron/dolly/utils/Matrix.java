@@ -1,7 +1,14 @@
 package com.pioneer.aaron.dolly.utils;
 
+import android.content.Context;
 import android.provider.CallLog;
+import android.util.Log;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -23,6 +30,69 @@ public class Matrix {
      * <p> 3 for WoWiFi;</p>
      */
     private static final int CALLS_CALL_TYPE_SPAN = 4;
+
+    private static final int ENGLISH_NAME_SUFIX = 10;
+    private static final int CHINESE_NAME_SUFIX = 4;
+
+    private static final String ENGLISH_NAME_FILE = "EnglishName.txt";
+    private static final String CHINESE_NAME_FILE = "ChineseName.txt";
+    private static ArrayList<String> mEnglishName;
+    private static int mEnglishNameSize;
+    private static ArrayList<String> mChineseName;
+    private static int mChineseNameSize;
+
+    public static void setNameRes(Context context, boolean hardReset) {
+        if (mEnglishName == null || mChineseName == null
+                || hardReset) {
+            mEnglishName = new ArrayList<>();
+            mChineseName = new ArrayList<>();
+            setEnglishName(context);
+            setChineseName(context);
+        }
+    }
+
+    private static void setEnglishName(Context context) {
+        if (mEnglishName != null) {
+            mEnglishName.clear();
+        }
+        try {
+            InputStream inputStream = context.getAssets().open(ENGLISH_NAME_FILE);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                mEnglishName.add(line);
+            }
+            inputStream.close();
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+
+        }
+        mEnglishNameSize = mEnglishName.size();
+    }
+
+    private static void setChineseName(Context context) {
+        if (mChineseName != null) {
+            mChineseName.clear();
+        }
+        try {
+            InputStream inputStream = context.getAssets().open(CHINESE_NAME_FILE);
+            BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(inputStream));
+            String line;
+            while ((line = bufferedReader.readLine()) != null) {
+                mChineseName.add(line);
+            }
+            inputStream.close();
+            bufferedReader.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+
+        }
+        mChineseNameSize = mChineseName.size();
+    }
+
 
     public static String getRandomPhoneNum() {
         int num = Math.abs(sRandom.nextInt());
@@ -66,5 +136,21 @@ public class Matrix {
 
     public static int getRandomFeatures() {
         return sRandom.nextBoolean() ? 1 : 0;
+    }
+
+    public static String getRandomName() {
+        boolean getEnglish = sRandom.nextBoolean();
+        StringBuilder name = new StringBuilder();
+        if (getEnglish) {
+            int index = sRandom.nextInt(mEnglishNameSize);
+            name.append(mEnglishName.get(index))
+                    .append(sRandom.nextInt(ENGLISH_NAME_SUFIX));
+        } else {
+            int len = sRandom.nextInt(CHINESE_NAME_SUFIX) + 1;
+            for (int i = 0; i < len; ++i) {
+                name.append(mChineseName.get(sRandom.nextInt(mChineseNameSize)));
+            }
+        }
+        return name.toString();
     }
 }
