@@ -18,7 +18,7 @@ public interface IForkCallLogContract {
     }
 
     interface Presenter extends IBasePresenter {
-        HashMap<String, Boolean> checkIfColumnsExist(Context context, String... columns);
+        HashMap<String, Boolean> getColumnsExist(Context context);
 
         void forkRandomCallLogs(Context context, int quantity);
 

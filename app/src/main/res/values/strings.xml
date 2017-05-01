@@ -26,4 +26,10 @@
     <string name="phone_num_blank_msg">Input a valid phone number.</string>
     <string name="call_log_quantity_msg">Input a valid quantity.</string>
     <string name="contact_quantity_msg">Input a valid quantity.</string>
+
+    <string name="fork_task_forking">Forking...</string>
+    <string name="fork_task_completed">Fork Completed.</string>
+    <string name="fork_task_canceled">Fork Canceled.</string>
+    <string name="fork_task_failed">Fork Failed.</string>
+    <string name="fork_already_in_procedure_msg">Please wait for last task to finish.</string>
 </resources>

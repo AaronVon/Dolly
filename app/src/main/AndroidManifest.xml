@@ -26,6 +26,11 @@
         <activity
             android:name=".fork.contacts.ForkContactsActivity"
             android:launchMode="singleTask"/>
+
+        <service
+            android:name=".fork.ForkService"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>

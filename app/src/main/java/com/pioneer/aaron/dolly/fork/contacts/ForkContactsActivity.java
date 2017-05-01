@@ -30,7 +30,7 @@ public class ForkContactsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forkcontacts);
 
-        mPresenter = new ForkContactPresenter();
+        mPresenter = new ForkContactPresenter(this);
         if (mPresenter.checkPermissions(this)) {
             initUI();
         }
@@ -91,4 +91,9 @@ public class ForkContactsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        mPresenter.onDestroy(this);
+    }
 }

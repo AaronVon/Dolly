@@ -79,14 +79,14 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forkcalllog);
 
-        mPresenter = new ForkCallLogPresenter();
+        mPresenter = new ForkCallLogPresenter(this);
         if (mPresenter.checkPermissions(this)) {
             initUI();
         }
     }
 
     private void initUI() {
-        mColumnsExist = mPresenter.checkIfColumnsExist(getApplicationContext(), DataBaseOpearator.CALLLOG_COLUMNS);
+        mColumnsExist = mPresenter.getColumnsExist(getApplicationContext());
 
         mPhoneNumberEditText = (EditText) findViewById(R.id.call_log_number_edtxt);
         mStartForkButton = (Button) findViewById(R.id.start_fork_calllog_btn);

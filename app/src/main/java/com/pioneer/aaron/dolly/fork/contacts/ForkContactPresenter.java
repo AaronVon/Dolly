@@ -1,9 +1,16 @@
 package com.pioneer.aaron.dolly.fork.contacts;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.IBinder;
+import android.util.Log;
 
 import com.pioneer.aaron.dolly.fork.DataBaseOpearator;
+import com.pioneer.aaron.dolly.fork.ForkService;
+import com.pioneer.aaron.dolly.fork.ForkTask;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
 /**
@@ -12,6 +19,26 @@ import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
 public class ForkContactPresenter implements IForkContactContract.Presenter {
 
+    private ForkService.ForkBinder mForkBinder;
+    private ServiceConnection mServiceConnection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder service) {
+            Log.i("Aaron", "onServiceConnected: ");
+            mForkBinder = (ForkService.ForkBinder) service;
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            Log.i("Aaron", "onServiceDisconnected: ");
+        }
+    };
+
+    public ForkContactPresenter(Context context) {
+        Intent intent = new Intent(context, ForkService.class);
+        context.startService(intent);
+        context.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+    }
+
     @Override
     public boolean checkPermissions(Activity activity) {
         return PermissionChecker.checkPermissions(activity);
@@ -19,6 +46,14 @@ public class ForkContactPresenter implements IForkContactContract.Presenter {
 
     @Override
     public void forkContacts(Context context, int quantity) {
-        DataBaseOpearator.getInstance(context).forkContacts(quantity);
+        if (mForkBinder != null) {
+            mForkBinder.startFork(ForkTask.FORK_TYPE_RANDOM_CONTACT, quantity);
+        }
+//        DataBaseOpearator.getInstance(context).forkContacts(quantity);
+    }
+
+    @Override
+    public void onDestroy(Context context) {
+        context.unbindService(mServiceConnection);
     }
 }

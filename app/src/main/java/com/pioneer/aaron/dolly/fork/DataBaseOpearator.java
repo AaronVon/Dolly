@@ -37,7 +37,7 @@ public class DataBaseOpearator {
     private static volatile DataBaseOpearator INSTANCE;
     private Context mContext;
 
-    private HashMap<String, Boolean> mColumnExists = new HashMap<>();
+    private HashMap<String, Boolean> mColumnExists;
 
     private DataBaseOpearator(Context context) {
         mContext = context;
@@ -58,7 +58,8 @@ public class DataBaseOpearator {
         return INSTANCE;
     }
 
-    public HashMap<String, Boolean> checkColumnsExists(String... columns) {
+    private HashMap<String, Boolean> checkColumnsExists(String... columns) {
+        mColumnExists = new HashMap<>();
         HashMap<String, Boolean> hashMap = new HashMap<>();
         Cursor cursor = null;
         ContentResolver contentResolver = mContext.getContentResolver();
@@ -73,11 +74,18 @@ public class DataBaseOpearator {
         return hashMap;
     }
 
-    public void forkRandomCallLogs(Context context, int quantity) {
-        if (context == null || quantity <= 0) {
+    public HashMap<String, Boolean> getColumnsExists() {
+        if (mColumnExists == null) {
+            return checkColumnsExists(DataBaseOpearator.CALLLOG_COLUMNS);
+        } else {
+            return mColumnExists;
+        }
+    }
+
+    public void forkRandomCallLogs(int quantity) {
+        if (mContext == null || quantity <= 0) {
             return;
         }
-        // TODO: 4/29/17 Make this Async
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
 
         for (int i = 0; i < quantity; ++i) {
@@ -101,7 +109,7 @@ public class DataBaseOpearator {
                     .build());
         }
         try {
-            context.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
+            mContext.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (OperationApplicationException e) {
@@ -109,11 +117,10 @@ public class DataBaseOpearator {
         }
     }
 
-    public void forkSpecifiedCallLog(Context context, ForkCallLogData data) {
-        if (context == null || data == null) {
+    public void forkSpecifiedCallLog(ForkCallLogData data) {
+        if (mContext == null || data == null) {
             return;
         }
-        // TODO: 4/29/17 Make this Async
         ContentValues values = new ContentValues();
         values.put(CallLog.Calls.NUMBER, data.getPhoneNum());
         values.put(CallLog.Calls.TYPE, data.getType());
@@ -140,7 +147,7 @@ public class DataBaseOpearator {
         }
 
         try {
-            context.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
+            mContext.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
         } catch (RemoteException e) {
             e.printStackTrace();
         } catch (OperationApplicationException e) {
@@ -185,4 +192,5 @@ public class DataBaseOpearator {
             e.printStackTrace();
         }
     }
+
 }
