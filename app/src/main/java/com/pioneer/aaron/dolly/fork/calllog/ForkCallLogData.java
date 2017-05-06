@@ -14,6 +14,9 @@ public class ForkCallLogData {
     public static final String CALL_TYPE = "call_type";
     public static final String FEATURES = "features";
     public static final String ENCRYPT_CALL = "encrypt_call";
+    public static final String IS_PRIMARY = "is_primary";
+    public static final String SUBJECT = "subject";
+    public static final String POST_CALL_TEXT = "post_call_text";
 
     private String mPhoneNum = "";
     private int mType = 0;
@@ -21,6 +24,24 @@ public class ForkCallLogData {
     private int mFeatures = 0;
     private int mEnryptCall = 0;
     private int mQuantity = 0;
+    private String mSubject;
+    private String mPostCallText;
+
+    public String getSubject() {
+        return mSubject;
+    }
+
+    public void setSubject(String subject) {
+        mSubject = subject;
+    }
+
+    public String getPostCallText() {
+        return mPostCallText;
+    }
+
+    public void setPostCallText(String postCallText) {
+        mPostCallText = postCallText;
+    }
 
     public void setPhoneNum(String phoneNum) {
         if (TextUtils.isEmpty(phoneNum)) {

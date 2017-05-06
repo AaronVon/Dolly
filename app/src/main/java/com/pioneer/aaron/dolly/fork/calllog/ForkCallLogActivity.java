@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -30,7 +32,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
     private static final String TAG = "Aaron";
     private IForkCallLogContract.Presenter mPresenter;
 
-    private static final int CALLLOG_DEFAULT_QUANTITY = 2;
+    private static final int CALLLOG_DEFAULT_QUANTITY = 5;
     EditText mPhoneNumberEditText;
     Button mStartForkButton;
     RadioGroup mCallLogTypeGroup;
@@ -165,6 +167,24 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.call_log_rcs:
+
+                break;
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+//        getMenuInflater().inflate(R.menu.menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
     ForkCallLogData getKeyValuesToFork() {
         ForkCallLogData data = new ForkCallLogData();
 
@@ -250,5 +270,11 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
 
         mEncryptedCallCheckBox.setEnabled(isEnabled);
         mVideoCallCheckBox.setEnabled(isEnabled);
+    }
+
+    @Override
+    protected void onDestroy() {
+
+        super.onDestroy();
     }
 }

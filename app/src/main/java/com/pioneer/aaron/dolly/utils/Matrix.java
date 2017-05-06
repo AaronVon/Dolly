@@ -142,15 +142,27 @@ public class Matrix {
         boolean getEnglish = sRandom.nextBoolean();
         StringBuilder name = new StringBuilder();
         if (getEnglish) {
-            int index = sRandom.nextInt(mEnglishNameSize);
+            int index = Math.abs(sRandom.nextInt(mEnglishNameSize));
             name.append(mEnglishName.get(index))
-                    .append(sRandom.nextInt(ENGLISH_NAME_SUFIX));
+                    .append(Math.abs(sRandom.nextInt(ENGLISH_NAME_SUFIX)));
         } else {
-            int len = sRandom.nextInt(CHINESE_NAME_SUFIX) + 1;
+            int len = Math.abs(sRandom.nextInt(CHINESE_NAME_SUFIX)) + 1;
             for (int i = 0; i < len; ++i) {
-                name.append(mChineseName.get(sRandom.nextInt(mChineseNameSize)));
+                name.append(mChineseName.get(Math.abs(sRandom.nextInt(mChineseNameSize))));
             }
         }
         return name.toString();
+    }
+
+
+    /**
+     * @return A random RCS Subject.
+     */
+    public static String getRandomSubject() {
+        return getRandomName();
+    }
+
+    public static String getRandomPostCallText() {
+        return getRandomName();
     }
 }

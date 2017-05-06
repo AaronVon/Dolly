@@ -27,11 +27,17 @@ public class DataBaseOpearator {
     public static final String CALLLOG_ENCRYPT = "encrypt_call";
     public static final String CALLLOG_FEATURE = "features";
     public static final String CALLLOG_CALL_TYPE = "call_type";
+    public static final String CALLLOG_IS_PRIMARY = "is_primary";
+    public static final String CALLLOG_SUBJECT = "subject";
+    public static final String CALLLOG_POST_CALL_TEXT = "post_call_text";
 
     public final static String[] CALLLOG_COLUMNS = new String[]{
             CALLLOG_CALL_TYPE,
             CALLLOG_ENCRYPT,
-            CALLLOG_FEATURE
+            CALLLOG_FEATURE,
+            CALLLOG_IS_PRIMARY,
+            CALLLOG_SUBJECT,
+            CALLLOG_POST_CALL_TEXT
     };
 
     private static volatile DataBaseOpearator INSTANCE;

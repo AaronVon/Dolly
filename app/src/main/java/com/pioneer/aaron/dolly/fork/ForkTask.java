@@ -29,6 +29,8 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
     public static final int FORK_TYPE_RANDOM_CALLLOGS = 1;
     public static final int FORK_TYPE_SPECIFIED_CALLLOGS = 2;
     public static final int FORK_TYPE_RANDOM_CONTACT = 3;
+    public static final int FORK_TYPE_RANDOM_RCS_CALLLOGS = 4;
+    public static final int FORK_TYPE_SPECIFIED_RCS_CALLLOGS = 5;
 
     private static final int FORK_BULK_SIZE = 10;
     private Context mContext;
@@ -48,15 +50,22 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         int result = TYPE_FAILED;
         if (params[0] instanceof Integer) {
             int type = (int) params[0];
+            Matrix.setNameRes(mContext, false);
             switch (type) {
                 case FORK_TYPE_RANDOM_CALLLOGS:
-                    result = forkRandomCallLogs((int) params[1]);
+                    result = forkRandomCallLogs((int) params[1], false);
                     break;
                 case FORK_TYPE_SPECIFIED_CALLLOGS:
-                    result = forkSpecifiedCallLog((ForkCallLogData) params[2]);
+                    result = forkSpecifiedCallLog((ForkCallLogData) params[2], false);
                     break;
                 case FORK_TYPE_RANDOM_CONTACT:
                     result = forkContacts((int) params[1]);
+                    break;
+                case FORK_TYPE_RANDOM_RCS_CALLLOGS:
+                    result = forkRandomCallLogs((int) params[1], true);
+                    break;
+                case FORK_TYPE_SPECIFIED_RCS_CALLLOGS:
+                    result = forkSpecifiedCallLog((ForkCallLogData) params[2], true);
                     break;
                 default:
                     result = TYPE_FAILED;
@@ -68,7 +77,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         return result;
     }
 
-    private int forkRandomCallLogs(int quantity) {
+    private int forkRandomCallLogs(int quantity, boolean isRCS) {
         if (mContext == null || quantity <= 0) {
             return TYPE_FAILED;
         }
@@ -81,14 +90,20 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             values.put(CallLog.Calls.NUMBER, Matrix.getRandomPhoneNum());
             values.put(CallLog.Calls.TYPE, Matrix.getRandomType());
             values.put(CallLog.Calls.DATE, System.currentTimeMillis());
-            if (columnsExists.get(ForkCallLogData.CALL_TYPE)) {
-                values.put(ForkCallLogData.CALL_TYPE, Matrix.getRandomCallType());
-            }
-            if (columnsExists.get(ForkCallLogData.ENCRYPT_CALL)) {
-                values.put(ForkCallLogData.ENCRYPT_CALL, Matrix.getRandomEncryptCall());
-            }
-            if (columnsExists.get(ForkCallLogData.FEATURES)) {
-                values.put(ForkCallLogData.FEATURES, Matrix.getRandomFeatures());
+            if (isRCS) {
+                values.put(ForkCallLogData.IS_PRIMARY, 1);
+                values.put(ForkCallLogData.SUBJECT, Matrix.getRandomSubject());
+                values.put(ForkCallLogData.POST_CALL_TEXT, Matrix.getRandomPostCallText());
+            } else {
+                if (columnsExists.get(ForkCallLogData.ENCRYPT_CALL)) {
+                    values.put(ForkCallLogData.ENCRYPT_CALL, Matrix.getRandomEncryptCall());
+                }
+                if (columnsExists.get(ForkCallLogData.FEATURES)) {
+                    values.put(ForkCallLogData.FEATURES, Matrix.getRandomFeatures());
+                }
+                if (columnsExists.get(ForkCallLogData.CALL_TYPE)) {
+                    values.put(ForkCallLogData.CALL_TYPE, Matrix.getRandomCallType());
+                }
             }
             operations.add(ContentProviderOperation
                     .newInsert(CallLog.Calls.CONTENT_URI)
@@ -116,7 +131,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         return TYPE_COMPLETED;
     }
 
-    private int forkSpecifiedCallLog(ForkCallLogData data) {
+    private int forkSpecifiedCallLog(ForkCallLogData data, boolean isRCS) {
         if (mContext == null || data == null) {
             return TYPE_FAILED;
         }
@@ -126,14 +141,21 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         values.put(CallLog.Calls.NUMBER, data.getPhoneNum());
         values.put(CallLog.Calls.TYPE, data.getType());
         values.put(CallLog.Calls.DATE, System.currentTimeMillis());
-        if (columnsExists.get(ForkCallLogData.CALL_TYPE)) {
-            values.put(ForkCallLogData.CALL_TYPE, data.getCallType());
-        }
-        if (columnsExists.get(ForkCallLogData.ENCRYPT_CALL)) {
-            values.put(ForkCallLogData.ENCRYPT_CALL, data.getEnryptCall());
-        }
-        if (columnsExists.get(ForkCallLogData.FEATURES)) {
-            values.put(ForkCallLogData.FEATURES, data.getFeatures());
+
+        if (isRCS) {
+            values.put(ForkCallLogData.IS_PRIMARY, 1);
+            values.put(ForkCallLogData.SUBJECT, data.getSubject());
+            values.put(ForkCallLogData.POST_CALL_TEXT, data.getPostCallText());
+        } else {
+            if (columnsExists.get(ForkCallLogData.CALL_TYPE)) {
+                values.put(ForkCallLogData.CALL_TYPE, data.getCallType());
+            }
+            if (columnsExists.get(ForkCallLogData.ENCRYPT_CALL)) {
+                values.put(ForkCallLogData.ENCRYPT_CALL, data.getEnryptCall());
+            }
+            if (columnsExists.get(ForkCallLogData.FEATURES)) {
+                values.put(ForkCallLogData.FEATURES, data.getFeatures());
+            }
         }
 
         ContentProviderOperation operation = ContentProviderOperation
@@ -172,7 +194,6 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         if (mContext == null || quantity <= 0) {
             return TYPE_FAILED;
         }
-        Matrix.setNameRes(mContext, false);
 
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
         int bulkSize = 0;

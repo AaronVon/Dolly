@@ -76,26 +76,41 @@ public class ForkService extends Service {
 
         public void startFork(int fork_type, int forkQuantity, ForkCallLogData data) {
             if (mForkTask == null) {
+                mForkTask = new ForkTask(mForkListener, getApplicationContext());
                 switch (fork_type) {
                     case ForkTask.FORK_TYPE_SPECIFIED_CALLLOGS:
-                        mForkTask = new ForkTask(mForkListener, getApplicationContext());
                         mForkTask.execute(fork_type, forkQuantity, data);
                         Toast.makeText(ForkService.this,
                                 getResources().getString(R.string.fork_task_forking),
                                 Toast.LENGTH_SHORT).show();
                         total = forkQuantity;
                         break;
+
                     case ForkTask.FORK_TYPE_RANDOM_CALLLOGS:
-                        mForkTask = new ForkTask(mForkListener, getApplicationContext());
                         mForkTask.execute(fork_type, forkQuantity);
                         Toast.makeText(ForkService.this,
                                 getResources().getString(R.string.fork_task_forking),
                                 Toast.LENGTH_SHORT).show();
                         total = forkQuantity;
                         break;
+
                     case ForkTask.FORK_TYPE_RANDOM_CONTACT:
-                        mForkTask = new ForkTask(mForkListener, getApplicationContext());
                         mForkTask.execute(fork_type, forkQuantity);
+                        Toast.makeText(ForkService.this,
+                                getResources().getString(R.string.fork_task_forking),
+                                Toast.LENGTH_SHORT).show();
+                        total = forkQuantity;
+                        break;
+
+                    case ForkTask.FORK_TYPE_RANDOM_RCS_CALLLOGS:
+                        mForkTask.execute(fork_type, forkQuantity);
+                        Toast.makeText(ForkService.this,
+                                getResources().getString(R.string.fork_task_forking),
+                                Toast.LENGTH_SHORT).show();
+                        total = forkQuantity;
+                        break;
+                    case ForkTask.FORK_TYPE_SPECIFIED_RCS_CALLLOGS:
+                        mForkTask.execute(fork_type, forkQuantity, data);
                         Toast.makeText(ForkService.this,
                                 getResources().getString(R.string.fork_task_forking),
                                 Toast.LENGTH_SHORT).show();
