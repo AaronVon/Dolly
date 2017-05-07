@@ -63,9 +63,9 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
         @Override
         public boolean onLongClick(View v) {
             HashMap<String, Boolean> columnExists = DataBaseOpearator.getInstance(MainActivity.this).getColumnsExists();
-            if (columnExists.containsKey(ForkCallLogData.SUBJECT)
-                    && columnExists.containsKey(ForkCallLogData.POST_CALL_TEXT)
-                    && columnExists.containsKey(ForkCallLogData.IS_PRIMARY)) {
+            if (columnExists.get(ForkCallLogData.SUBJECT)
+                    && columnExists.get(ForkCallLogData.POST_CALL_TEXT)
+                    && columnExists.get(ForkCallLogData.IS_PRIMARY)) {
                 mPresenter.forkRCS(MainActivity.this);
             }
             return false;
