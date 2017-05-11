@@ -16,6 +16,8 @@ public interface IMainContract {
         void forkRCS(Context context);
 
         void onDestroy(Context context);
+
+        void vibrate();
     }
 
 }

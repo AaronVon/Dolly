@@ -6,7 +6,10 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.Handler;
 import android.os.IBinder;
+import android.os.Message;
+import android.os.Vibrator;
 import android.provider.CallLog;
 import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
@@ -28,7 +31,23 @@ import com.pioneer.aaron.dolly.utils.PermissionChecker;
 public class MainPresenter implements IMainContract.Presenter {
 
     private static final int CALLLOG_DEFAULT_QUANTITY = 5;
+    private static final int VIBRATE_ON_LONG_CLICK = 100;
     private ForkService.ForkBinder mForkBinder;
+    private Context mContext;
+    private MainHanler mHanler;
+    private class MainHanler extends Handler {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case VIBRATE_ON_LONG_CLICK:
+                    Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
+                    vibrator.vibrate(70);
+                    break;
+                default:
+                    break;
+            }
+        }
+    }
 
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -43,9 +62,11 @@ public class MainPresenter implements IMainContract.Presenter {
     };
 
     public MainPresenter(Context context) {
+        mContext = context;
         Intent intent = new Intent(context, ForkService.class);
         context.startService(intent);
         context.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
+        mHanler = new MainHanler();
     }
 
     @Override
@@ -114,6 +135,11 @@ public class MainPresenter implements IMainContract.Presenter {
     @Override
     public void onDestroy(Context context) {
         context.unbindService(mServiceConnection);
+    }
+
+    @Override
+    public void vibrate() {
+        mHanler.sendEmptyMessage(VIBRATE_ON_LONG_CLICK);
     }
 
     private void startForkRandomRCS(int quantity) {

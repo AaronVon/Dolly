@@ -2,7 +2,6 @@ package com.pioneer.aaron.dolly.utils;
 
 import android.content.Context;
 import android.provider.CallLog;
-import android.util.Log;
 
 import java.io.BufferedReader;
 import java.io.IOException;

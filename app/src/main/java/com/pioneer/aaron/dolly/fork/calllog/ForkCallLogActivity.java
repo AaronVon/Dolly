@@ -19,7 +19,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 
 import com.pioneer.aaron.dolly.R;
-import com.pioneer.aaron.dolly.fork.DataBaseOpearator;
+import com.pioneer.aaron.dolly.fork.DataBaseOperator;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
 import java.util.HashMap;
@@ -103,7 +103,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         mMissedRadioButton = (RadioButton) findViewById(R.id.missed_radiobtn);
 
         mCallLogVolteGroup = (RadioGroup) findViewById(R.id.call_log_volte_feature_radiogroup);
-        if (mColumnsExist.get(DataBaseOpearator.CALLLOG_CALL_TYPE)) {
+        if (mColumnsExist.get(DataBaseOperator.CALLLOG_CALL_TYPE)) {
             mCallLogVolteGroup.setVisibility(View.VISIBLE);
             mVolteRadioButton = (RadioButton) findViewById(R.id.call_log_volte_radiobtn);
             mVolteRadioButton.setChecked(true);
@@ -114,7 +114,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         }
 
         mEncryptedCallCheckBox = (CheckBox) findViewById(R.id.encrypted_call_chkbox);
-        if (mColumnsExist.get(DataBaseOpearator.CALLLOG_ENCRYPT)) {
+        if (mColumnsExist.get(DataBaseOperator.CALLLOG_ENCRYPT)) {
             mEncryptedCallCheckBox.setVisibility(View.VISIBLE);
             mEncryptedCallCheckBox.setChecked(true);
         } else {
@@ -122,7 +122,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         }
 
         mVideoCallCheckBox = (CheckBox) findViewById(R.id.video_call_chkbox);
-        if (mColumnsExist.get(DataBaseOpearator.CALLLOG_FEATURE)) {
+        if (mColumnsExist.get(DataBaseOperator.CALLLOG_FEATURE)) {
             mVideoCallCheckBox.setVisibility(View.VISIBLE);
         } else {
             mVideoCallCheckBox.setVisibility(View.GONE);
@@ -131,7 +131,6 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         mRollDiceCheckBox = (CheckBox) findViewById(R.id.call_log_roll_dice);
         mRollDiceCheckBox.setOnCheckedChangeListener(mCheckedChangeListener);
         mCallLogQuantityEditText = (EditText) findViewById(R.id.call_log_quantity_edtxt);
-        mCallLogQuantityEditText.setText(String.valueOf(CALLLOG_DEFAULT_QUANTITY));
     }
 
     @Override

@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
-import android.util.Log;
 
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
 import com.pioneer.aaron.dolly.utils.Matrix;
@@ -81,7 +80,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         if (mContext == null || quantity <= 0) {
             return TYPE_FAILED;
         }
-        HashMap<String, Boolean> columnsExists = DataBaseOpearator.getInstance(mContext).getColumnsExists();
+        HashMap<String, Boolean> columnsExists = DataBaseOperator.getInstance(mContext).getColumnsExists();
 
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
         int bulkSize = 0;
@@ -135,7 +134,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         if (mContext == null || data == null) {
             return TYPE_FAILED;
         }
-        HashMap<String, Boolean> columnsExists = DataBaseOpearator.getInstance(mContext).getColumnsExists();
+        HashMap<String, Boolean> columnsExists = DataBaseOperator.getInstance(mContext).getColumnsExists();
 
         ContentValues values = new ContentValues();
         values.put(CallLog.Calls.NUMBER, data.getPhoneNum());

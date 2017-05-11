@@ -7,7 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 
-import com.pioneer.aaron.dolly.fork.DataBaseOpearator;
+import com.pioneer.aaron.dolly.fork.DataBaseOperator;
 import com.pioneer.aaron.dolly.fork.ForkService;
 import com.pioneer.aaron.dolly.fork.ForkTask;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
@@ -42,7 +42,7 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
 
     @Override
     public HashMap<String, Boolean> getColumnsExist(Context context) {
-        return DataBaseOpearator.getInstance(context).getColumnsExists();
+        return DataBaseOperator.getInstance(context).getColumnsExists();
     }
 
     @Override

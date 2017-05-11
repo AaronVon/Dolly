@@ -16,12 +16,14 @@ import com.pioneer.aaron.dolly.utils.Matrix;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 /**
  * Created by Aaron on 4/27/17.
  */
 
-public class DataBaseOpearator {
+public class DataBaseOperator {
     private static final String TAG = "aaron";
 
     public static final String CALLLOG_ENCRYPT = "encrypt_call";
@@ -40,29 +42,38 @@ public class DataBaseOpearator {
             CALLLOG_POST_CALL_TEXT
     };
 
-    private static volatile DataBaseOpearator INSTANCE;
+    private static volatile DataBaseOperator INSTANCE;
     private Context mContext;
-
+    private ExecutorService mSingleExecutorService;
     private HashMap<String, Boolean> mColumnExists;
 
-    private DataBaseOpearator(Context context) {
+    private DataBaseOperator(Context context) {
         mContext = context;
+        mSingleExecutorService = Executors.newSingleThreadExecutor();
+        mSingleExecutorService.execute(mCheckColumnsRunnable);
     }
 
     /**
      * @param context {@link Application#getApplicationContext()} ONLY!!!
      * @return
      */
-    public static DataBaseOpearator getInstance(Context context) {
+    public static DataBaseOperator getInstance(Context context) {
         if (INSTANCE == null) {
-            synchronized (DataBaseOpearator.class) {
+            synchronized (DataBaseOperator.class) {
                 if (INSTANCE == null) {
-                    INSTANCE = new DataBaseOpearator(context);
+                    INSTANCE = new DataBaseOperator(context);
                 }
             }
         }
         return INSTANCE;
     }
+
+    private Runnable mCheckColumnsRunnable = new Runnable() {
+        @Override
+        public void run() {
+            mColumnExists = checkColumnsExists(DataBaseOperator.CALLLOG_COLUMNS);
+        }
+    };
 
     private HashMap<String, Boolean> checkColumnsExists(String... columns) {
         mColumnExists = new HashMap<>();
@@ -81,8 +92,8 @@ public class DataBaseOpearator {
     }
 
     public HashMap<String, Boolean> getColumnsExists() {
-        if (mColumnExists == null) {
-            return checkColumnsExists(DataBaseOpearator.CALLLOG_COLUMNS);
+        if (mColumnExists == null || mColumnExists.isEmpty()) {
+            return checkColumnsExists(DataBaseOperator.CALLLOG_COLUMNS);
         } else {
             return mColumnExists;
         }
