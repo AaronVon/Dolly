@@ -255,6 +255,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
     }
 
     private void setButtonsEnabled(boolean isEnabled) {
+        mPhoneNumberEditText.setEnabled(isEnabled);
         // call log types
         int calllogTypeSize = mCallLogTypeGroup.getChildCount();
         for (int i = 0; i < calllogTypeSize; ++i) {

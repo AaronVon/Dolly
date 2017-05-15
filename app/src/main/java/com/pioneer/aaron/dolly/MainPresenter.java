@@ -15,6 +15,7 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
@@ -82,12 +83,26 @@ public class MainPresenter implements IMainContract.Presenter {
         final EditText subjectEditText = (EditText) view.findViewById(R.id.rcs_call_log_subject);
         final EditText postCallEditText = (EditText) view.findViewById(R.id.rcs_call_log_post_call_text);
         final EditText quantityEditText = (EditText) view.findViewById(R.id.rcs_call_log_quantity);
-
+        final RadioGroup typeRadioGroup = (RadioGroup) view.findViewById(R.id.call_log_type_radioGroup);
         final int type = getTypeChecked(view);
 
 
         quantityEditText.setText(String.valueOf(CALLLOG_DEFAULT_QUANTITY));
         final CheckBox rollDiceCheckBox = (CheckBox) view.findViewById(R.id.call_log_roll_dice);
+        rollDiceCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                boolean enabled = !isChecked;
+                numberEditText.setEnabled(enabled);
+                subjectEditText.setEnabled(enabled);
+                postCallEditText.setEnabled(enabled);
+                int childSize = typeRadioGroup.getChildCount();
+                for (int i =0;i<childSize;++i) {
+                    RadioButton child = (RadioButton) typeRadioGroup.getChildAt(i);
+                    child.setEnabled(enabled);
+                }
+            }
+        });
 
         builder.setTitle(R.string.menu_call_log_rcs)
                 .setNegativeButton(R.string.dialog_cancel, null)
@@ -113,7 +128,6 @@ public class MainPresenter implements IMainContract.Presenter {
     }
 
     private int getTypeChecked(View view) {
-        RadioGroup typeRadioGroup = (RadioGroup) view.findViewById(R.id.call_log_type_radioGroup);
         RadioButton outgoingRadioButton = (RadioButton) view.findViewById(R.id.outgoing_radiobtn);
         outgoingRadioButton.setChecked(true);
         RadioButton rejectedRadioButton = (RadioButton) view.findViewById(R.id.rejected_radiobtn);

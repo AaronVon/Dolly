@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
                 mPresenter.vibrate();
                 mPresenter.forkRCS(MainActivity.this);
             }
-            return false;
+            return true;
         }
     };
 
