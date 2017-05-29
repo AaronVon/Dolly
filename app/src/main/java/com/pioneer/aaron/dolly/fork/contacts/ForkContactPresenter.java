@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.pioneer.aaron.dolly.R;
 import com.pioneer.aaron.dolly.fork.ForkService;
 import com.pioneer.aaron.dolly.fork.ForkTask;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
@@ -44,11 +46,16 @@ public class ForkContactPresenter implements IForkContactContract.Presenter {
     }
 
     @Override
+    public void toastForkTask(Context context) {
+        Toast.makeText(context, context.getResources().getString(R.string.fork_task_forking), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
     public void forkContacts(Context context, int quantity) {
         if (mForkBinder != null) {
             mForkBinder.startFork(ForkTask.FORK_TYPE_RANDOM_CONTACT, quantity);
+            toastForkTask(context);
         }
-//        DataBaseOpearator.getInstance(context).forkContacts(quantity);
     }
 
     @Override

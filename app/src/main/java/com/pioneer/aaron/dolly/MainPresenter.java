@@ -19,6 +19,7 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.Toast;
 
 import com.pioneer.aaron.dolly.fork.ForkService;
 import com.pioneer.aaron.dolly.fork.ForkTask;
@@ -73,6 +74,11 @@ public class MainPresenter implements IMainContract.Presenter {
     @Override
     public boolean checkPermissions(Activity activity) {
         return PermissionChecker.checkPermissions(activity);
+    }
+
+    @Override
+    public void toastForkTask(Context context) {
+        Toast.makeText(context, context.getResources().getString(R.string.fork_task_forking), Toast.LENGTH_SHORT).show();
     }
 
     @Override

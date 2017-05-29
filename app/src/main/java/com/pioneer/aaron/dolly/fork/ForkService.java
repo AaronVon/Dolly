@@ -80,40 +80,25 @@ public class ForkService extends Service {
                 switch (fork_type) {
                     case ForkTask.FORK_TYPE_SPECIFIED_CALLLOGS:
                         mForkTask.execute(fork_type, forkQuantity, data);
-                        Toast.makeText(ForkService.this,
-                                getResources().getString(R.string.fork_task_forking),
-                                Toast.LENGTH_SHORT).show();
                         total = forkQuantity;
                         break;
 
                     case ForkTask.FORK_TYPE_RANDOM_CALLLOGS:
                         mForkTask.execute(fork_type, forkQuantity);
-                        Toast.makeText(ForkService.this,
-                                getResources().getString(R.string.fork_task_forking),
-                                Toast.LENGTH_SHORT).show();
                         total = forkQuantity;
                         break;
 
                     case ForkTask.FORK_TYPE_RANDOM_CONTACT:
                         mForkTask.execute(fork_type, forkQuantity);
-                        Toast.makeText(ForkService.this,
-                                getResources().getString(R.string.fork_task_forking),
-                                Toast.LENGTH_SHORT).show();
                         total = forkQuantity;
                         break;
 
                     case ForkTask.FORK_TYPE_RANDOM_RCS_CALLLOGS:
                         mForkTask.execute(fork_type, forkQuantity);
-                        Toast.makeText(ForkService.this,
-                                getResources().getString(R.string.fork_task_forking),
-                                Toast.LENGTH_SHORT).show();
                         total = forkQuantity;
                         break;
                     case ForkTask.FORK_TYPE_SPECIFIED_RCS_CALLLOGS:
                         mForkTask.execute(fork_type, forkQuantity, data);
-                        Toast.makeText(ForkService.this,
-                                getResources().getString(R.string.fork_task_forking),
-                                Toast.LENGTH_SHORT).show();
                         total = forkQuantity;
                         break;
                     default:
@@ -144,8 +129,8 @@ public class ForkService extends Service {
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
-        builder.setSmallIcon(R.mipmap.ic_launcher);
-        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
+        builder.setSmallIcon(R.mipmap.fork_icon);
+        builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.fork_icon));
         builder.setContentIntent(pendingIntent);
         builder.setContentTitle(title);
         if (progress > 0) {

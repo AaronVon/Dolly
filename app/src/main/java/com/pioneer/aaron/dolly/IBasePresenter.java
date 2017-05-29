@@ -1,6 +1,7 @@
 package com.pioneer.aaron.dolly;
 
 import android.app.Activity;
+import android.content.Context;
 
 /**
  * Created by Aaron on 4/29/17.
@@ -8,4 +9,6 @@ import android.app.Activity;
 
 public interface IBasePresenter {
     boolean checkPermissions(Activity activity);
+
+    void toastForkTask(Context context);
 }
