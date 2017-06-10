@@ -8,6 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.transition.Slide;
+import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -43,6 +45,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
 
     RadioGroup mCallLogVolteGroup;
     RadioButton mVolteRadioButton;
+    RadioButton mVowifiRadioButton;
     RadioButton mHdRadioButton;
     RadioButton mNoneRadioButton;
 
@@ -80,6 +83,8 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forkcalllog);
+//        Slide slide = (Slide) TransitionInflater.from(this).inflateTransition(R.transition.activity_slide);
+//        getWindow().setExitTransition(slide);
 
         mPresenter = new ForkCallLogPresenter(this);
         if (mPresenter.checkPermissions(this)) {
@@ -107,6 +112,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
             mCallLogVolteGroup.setVisibility(View.VISIBLE);
             mVolteRadioButton = (RadioButton) findViewById(R.id.call_log_volte_radiobtn);
             mVolteRadioButton.setChecked(true);
+            mVowifiRadioButton = (RadioButton) findViewById(R.id.call_log_vowifi_hd_radiobtn);
             mHdRadioButton = (RadioButton) findViewById(R.id.call_log_volte_hd_radiobtn);
             mNoneRadioButton = (RadioButton) findViewById(R.id.call_log_volte_none_radiobtn);
         } else {
@@ -207,6 +213,8 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         if (mCallLogVolteGroup.getVisibility() == View.VISIBLE) {
             if (mVolteRadioButton.isChecked()) {
                 volte_type = 82;
+            } else if (mVowifiRadioButton.isChecked()) {
+                volte_type = 83;
             } else if (mHdRadioButton.isChecked()) {
                 volte_type = 81;
             } else if (mNoneRadioButton.isChecked()) {

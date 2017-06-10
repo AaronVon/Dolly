@@ -101,6 +101,15 @@
                 android:textAllCaps="false"/>
 
             <RadioButton
+                android:id="@+id/call_log_vowifi_hd_radiobtn"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:maxLines="1"
+                android:text="@string/call_log_volte_hd"
+                android:textAllCaps="false"/>
+
+            <RadioButton
                 android:id="@+id/call_log_volte_none_radiobtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
