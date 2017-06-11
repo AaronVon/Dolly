@@ -15,8 +15,8 @@ import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity implements IMainContract.View {
 
-    private Button mForkCallLogButton;
-    private Button mForkContactButton;
+    private View mForkCallLogButton;
+    private View mForkContactButton;
 
     private IMainContract.Presenter mPresenter;
 
@@ -26,8 +26,8 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
         setContentView(R.layout.activity_main);
         mPresenter = new MainPresenter(this);
 
-        mForkCallLogButton = (Button) findViewById(R.id.fork_calllog_btn);
-        mForkContactButton = (Button) findViewById(R.id.fork_contact_btn);
+        mForkCallLogButton = (View) findViewById(R.id.fork_call_log_btn);
+        mForkContactButton = (View) findViewById(R.id.fork_contact_btn);
         mForkCallLogButton.setOnClickListener(mOnClickListener);
         mForkCallLogButton.setOnLongClickListener(mOnLongClickListener);
         mForkContactButton.setOnClickListener(mOnClickListener);
@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
         @Override
         public void onClick(View v) {
             switch (v.getId()) {
-                case R.id.fork_calllog_btn:
+                case R.id.fork_call_log_btn:
                     Intent forkCallLogIntent = new Intent(MainActivity.this, ForkCallLogActivity.class);
                     startActivity(forkCallLogIntent);
                     break;
