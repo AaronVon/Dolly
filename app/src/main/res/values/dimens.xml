@@ -6,5 +6,5 @@
     <dimen name="fork_btn_padding">7dp</dimen>
     <dimen name="fork_btn_width">30dp</dimen>
     <dimen name="fork_btn_height">30dp</dimen>
-    <dimen name="fork_image_btn">7dp</dimen>
+    <dimen name="fork_image_btn">10dp</dimen>
 </resources>
