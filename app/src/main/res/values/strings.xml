@@ -38,4 +38,9 @@
     <string name="call_log_rcs_subject">Subject</string>
     <string name="call_log_rcs_post_call_text">Post Call Text</string>
     <string name="dialog_cancel">Cancel</string>
+
+    <!--shortcuts-->
+    <string name="shortcut_fork_contact">Fork Contacts</string>
+    <string name="shortcut_fork_call_log">Fork Call Log</string>
+    <string name="shortcut_disabled">Shortcut Disabled</string>
 </resources>

@@ -1,0 +1,31 @@
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="shortcut_fork_contacts"
+        android:enabled="true"
+        android:icon="@drawable/contact"
+        android:shortcutShortLabel="@string/shortcut_fork_contact"
+        android:shortcutLongLabel="@string/shortcut_fork_contact"
+        android:shortcutDisabledMessage="@string/shortcut_disabled">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.pioneer.aaron.dolly"
+            android:targetClass="com.pioneer.aaron.dolly.fork.contacts.ForkContactsActivity" />
+        <categories android:name="android.intent.category.DEFAULT" />
+    </shortcut>
+
+    <shortcut
+        android:shortcutId="shortcut_fork_calllog"
+        android:enabled="true"
+        android:icon="@drawable/call_log"
+        android:shortcutShortLabel="@string/shortcut_fork_call_log"
+        android:shortcutLongLabel="@string/shortcut_fork_call_log"
+        android:shortcutDisabledMessage="@string/shortcut_disabled">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.pioneer.aaron.dolly"
+            android:targetClass="com.pioneer.aaron.dolly.fork.calllog.ForkCallLogActivity" />
+        <categories android:name="android.intent.category.DEFAULT" />
+    </shortcut>
+
+</shortcuts>
+
