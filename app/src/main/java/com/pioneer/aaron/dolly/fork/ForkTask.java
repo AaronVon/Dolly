@@ -30,6 +30,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
     public static final int FORK_TYPE_RANDOM_CONTACT = 3;
     public static final int FORK_TYPE_RANDOM_RCS_CALLLOGS = 4;
     public static final int FORK_TYPE_SPECIFIED_RCS_CALLLOGS = 5;
+    public static final int FORK_TYPE_ALL_TYPE_CONTACT = 6;
 
     private static final int FORK_BULK_SIZE = 10;
     private Context mContext;
@@ -49,7 +50,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         int result = TYPE_FAILED;
         if (params[0] instanceof Integer) {
             int type = (int) params[0];
-            Matrix.setNameRes(mContext, false);
+            Matrix.loadResources(mContext, false);
             switch (type) {
                 case FORK_TYPE_RANDOM_CALLLOGS:
                     result = forkRandomCallLogs((int) params[1], false);
@@ -58,7 +59,10 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                     result = forkSpecifiedCallLog((ForkCallLogData) params[2], false);
                     break;
                 case FORK_TYPE_RANDOM_CONTACT:
-                    result = forkContacts((int) params[1]);
+                    result = forkContacts((int) params[1], false);
+                    break;
+                case FORK_TYPE_ALL_TYPE_CONTACT:
+                    result = forkContacts((int) params[1], true);
                     break;
                 case FORK_TYPE_RANDOM_RCS_CALLLOGS:
                     result = forkRandomCallLogs((int) params[1], true);
@@ -189,7 +193,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         return TYPE_COMPLETED;
     }
 
-    private int forkContacts(int quantity) {
+    private int forkContacts(int quantity, boolean allType) {
         if (mContext == null || quantity <= 0) {
             return TYPE_FAILED;
         }
@@ -197,7 +201,8 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
         int bulkSize = 0;
         for (int i = 0; i < quantity; ++i) {
-            int rawContacInsertIndex = operations.size();
+            int rawContactInsertIndex = operations.size();
+            String contactName = Matrix.getRandomName();
             operations.add(ContentProviderOperation
                     .newInsert(ContactsContract.RawContacts.CONTENT_URI)
                     .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
@@ -205,16 +210,94 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                     .build());
             operations.add(ContentProviderOperation
                     .newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContacInsertIndex)
+                    .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                     .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
-                    .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, Matrix.getRandomName())
+                    .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, contactName)
                     .build());
             operations.add(ContentProviderOperation
                     .newInsert(ContactsContract.Data.CONTENT_URI)
-                    .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContacInsertIndex)
+                    .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                     .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                     .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, Matrix.getRandomPhoneNum())
                     .build());
+            if (allType) {
+                /* E-mail */
+                operations.add(ContentProviderOperation
+                        .newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Email.DATA, Matrix.getRandomEmail())
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Email.TYPE, Matrix.getRandomEmailType())
+                        .build());
+
+                /* Postal Address */
+                operations.add(ContentProviderOperation
+                        .newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, Matrix.getRandomCountry())
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, Matrix.getRandomPostalType())
+                        .build());
+
+                /* IM */
+                operations.add(ContentProviderOperation
+                        .newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Im.DATA, contactName)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Im.DATA5, Matrix.getRandomIMProtocolType())
+                        .build());
+
+                /* Organization */
+                operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, Matrix.getRandomOrganization())
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Organization.TYPE, Matrix.getRandomOrganizationType())
+                        .build());
+
+                /* Nickname */
+                operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Nickname.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Nickname.NAME, contactName)
+                        .build());
+
+                /* Website */
+                operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Website.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Website.URL, Matrix.getRandomWebsite(contactName))
+                        .withValue(ContactsContract.CommonDataKinds.Website.TYPE, Matrix.getRandomWebsiteType())
+                        .build());
+
+                /* Relation */
+                operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Relation.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Relation.NAME, Matrix.getRandomName())
+                        .withValue(ContactsContract.CommonDataKinds.Relation.TYPE, Matrix.getRandomRelationType())
+                        .build());
+
+                /* Event */
+                operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Event.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Event.DATA, Matrix.getRandomEventDate())
+                        .withValue(ContactsContract.CommonDataKinds.Event.TYPE, Matrix.getRandomEventType())
+                        .build());
+
+                /* Note */
+                operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                        .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Note.CONTENT_ITEM_TYPE)
+                        .withValue(ContactsContract.CommonDataKinds.Note.NOTE, Matrix.getRandomNote())
+                        .build());
+            }
             ++bulkSize;
             if (mForkCanceled) {
                 return TYPE_CANCELED;

@@ -8,6 +8,7 @@ import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.pioneer.aaron.dolly.R;
@@ -24,6 +25,7 @@ public class ForkContactsActivity extends AppCompatActivity {
 
     private EditText mContactQuantity;
     private Button mStartForkButton;
+    private CheckBox mContactsAllTypeCheckBox;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -42,6 +44,8 @@ public class ForkContactsActivity extends AppCompatActivity {
 
         mStartForkButton = (Button) findViewById(R.id.start_fork_contact_btn);
         mStartForkButton.setOnClickListener(mOnClickListener);
+
+        mContactsAllTypeCheckBox = (CheckBox) findViewById(R.id.fork_contact_all_type);
     }
 
     @Override
@@ -73,7 +77,7 @@ public class ForkContactsActivity extends AppCompatActivity {
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.start_fork_contact_btn:
-                    startFork();
+                    startFork(mContactsAllTypeCheckBox.isChecked());
                     break;
                 default:
                     break;
@@ -81,13 +85,13 @@ public class ForkContactsActivity extends AppCompatActivity {
         }
     };
 
-    private void startFork() {
+    private void startFork(boolean allTypes) {
         int quantity = Integer.parseInt(mContactQuantity.getText().toString());
         if (quantity <= 0) {
             Snackbar.make(findViewById(R.id.activity_fork_contact_layout), R.string.contact_quantity_msg, Snackbar.LENGTH_SHORT)
                     .show();
         } else {
-            mPresenter.forkContacts(this, quantity);
+            mPresenter.forkContacts(this, quantity, allTypes);
         }
     }
 

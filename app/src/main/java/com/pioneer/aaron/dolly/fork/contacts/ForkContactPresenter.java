@@ -46,14 +46,20 @@ public class ForkContactPresenter implements IForkContactContract.Presenter {
     }
 
     @Override
+    public void loadResInBackground() {
+
+    }
+
+    @Override
     public void toastForkTask(Context context) {
         Toast.makeText(context, context.getResources().getString(R.string.fork_task_forking), Toast.LENGTH_SHORT).show();
     }
 
     @Override
-    public void forkContacts(Context context, int quantity) {
+    public void forkContacts(Context context, int quantity, boolean allTypes) {
         if (mForkBinder != null) {
-            mForkBinder.startFork(ForkTask.FORK_TYPE_RANDOM_CONTACT, quantity);
+            mForkBinder.startFork(allTypes ? ForkTask.FORK_TYPE_ALL_TYPE_CONTACT : ForkTask.FORK_TYPE_RANDOM_CONTACT,
+                    quantity);
             toastForkTask(context);
         }
     }

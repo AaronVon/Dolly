@@ -10,6 +10,7 @@ import com.pioneer.aaron.dolly.fork.DataBaseOperator;
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogActivity;
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
 import com.pioneer.aaron.dolly.fork.contacts.ForkContactsActivity;
+import com.pioneer.aaron.dolly.utils.Matrix;
 
 import java.util.HashMap;
 
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
     protected void onResume() {
         super.onResume();
         mPresenter.checkPermissions(this);
+        mPresenter.loadResInBackground();
     }
 
     View.OnClickListener mOnClickListener = new View.OnClickListener() {

@@ -93,6 +93,11 @@ public class ForkService extends Service {
                         total = forkQuantity;
                         break;
 
+                    case ForkTask.FORK_TYPE_ALL_TYPE_CONTACT:
+                        mForkTask.execute(fork_type, forkQuantity);
+                        total = forkQuantity;
+                        break;
+
                     case ForkTask.FORK_TYPE_RANDOM_RCS_CALLLOGS:
                         mForkTask.execute(fork_type, forkQuantity);
                         total = forkQuantity;

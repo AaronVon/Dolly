@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.Vibrator;
 import android.provider.CallLog;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -24,6 +26,7 @@ import android.widget.Toast;
 import com.pioneer.aaron.dolly.fork.ForkService;
 import com.pioneer.aaron.dolly.fork.ForkTask;
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
+import com.pioneer.aaron.dolly.utils.Matrix;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
 /**
@@ -31,6 +34,7 @@ import com.pioneer.aaron.dolly.utils.PermissionChecker;
  */
 
 public class MainPresenter implements IMainContract.Presenter {
+    private static final String TAG = "MainPresenter";
 
     private static final int CALLLOG_DEFAULT_QUANTITY = 5;
     private static final int VIBRATE_ON_LONG_CLICK = 100;
@@ -74,6 +78,24 @@ public class MainPresenter implements IMainContract.Presenter {
     @Override
     public boolean checkPermissions(Activity activity) {
         return PermissionChecker.checkPermissions(activity);
+    }
+
+    @Override
+    public void loadResInBackground() {
+        AsyncTask<Void,Void,Void> loadResAsyncTask = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void... params) {
+                Matrix.loadResources(mContext, true);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                Log.d(TAG, "onPostExecute: load res finished in background");
+            }
+        };
+        loadResAsyncTask.execute();
     }
 
     @Override

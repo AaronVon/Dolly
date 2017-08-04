@@ -70,6 +70,11 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
     }
 
     @Override
+    public void loadResInBackground() {
+        // currently nothing to do.
+    }
+
+    @Override
     public void toastForkTask(Context context) {
         Toast.makeText(context, context.getResources().getString(R.string.fork_task_forking), Toast.LENGTH_SHORT).show();
     }
