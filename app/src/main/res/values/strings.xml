@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Dolly</string>
+    <string name="app_name">Forks</string>
     <string name="fork_calllog_btn">Fork Call Log</string>
     <string name="fork_contact_btn">Fork Contact</string>
     <string name="calllog_number_hint">Specify a number or leave empty for random number</string>
