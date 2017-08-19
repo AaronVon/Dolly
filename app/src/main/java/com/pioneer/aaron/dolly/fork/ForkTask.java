@@ -227,7 +227,6 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                         .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                         .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
                         .withValue(ContactsContract.CommonDataKinds.Email.DATA, Matrix.getRandomEmail())
-                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Email.CONTENT_ITEM_TYPE)
                         .withValue(ContactsContract.CommonDataKinds.Email.TYPE, Matrix.getRandomEmailType())
                         .build());
 
@@ -237,7 +236,6 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                         .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                         .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
                         .withValue(ContactsContract.CommonDataKinds.StructuredPostal.COUNTRY, Matrix.getRandomCountry())
-                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredPostal.CONTENT_ITEM_TYPE)
                         .withValue(ContactsContract.CommonDataKinds.StructuredPostal.TYPE, Matrix.getRandomPostalType())
                         .build());
 
@@ -247,7 +245,6 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                         .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                         .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE)
                         .withValue(ContactsContract.CommonDataKinds.Im.DATA, contactName)
-                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Im.CONTENT_ITEM_TYPE)
                         .withValue(ContactsContract.CommonDataKinds.Im.DATA5, Matrix.getRandomIMProtocolType())
                         .build());
 
@@ -256,7 +253,6 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                         .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                         .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
                         .withValue(ContactsContract.CommonDataKinds.Organization.COMPANY, Matrix.getRandomOrganization())
-                        .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Organization.CONTENT_ITEM_TYPE)
                         .withValue(ContactsContract.CommonDataKinds.Organization.TYPE, Matrix.getRandomOrganizationType())
                         .build());
 
