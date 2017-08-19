@@ -1,167 +1,172 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    android:id="@+id/activity_fork_call_log_layout"
+<ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="@dimen/activity_horizontal_margin">
+    android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/activity_fork_call_log_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:focusable="true"
-        android:focusableInTouchMode="true"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:padding="@dimen/activity_horizontal_margin">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            android:orientation="vertical">
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <EditText
+                    android:id="@+id/call_log_number_edtxt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:hint="@string/calllog_number_hint"
+                    android:inputType="number"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <RadioGroup
+                android:id="@+id/call_log_type_radioGroup"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <RadioButton
+                    android:id="@+id/outgoing_radiobtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/call_log_outgoing"
+                    android:textAllCaps="false"/>
+
+                <RadioButton
+                    android:id="@+id/rejected_radiobtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/call_log_rejected"
+                    android:textAllCaps="false"/>
+
+                <RadioButton
+                    android:id="@+id/answered_radiobtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/call_log_incoming"
+                    android:textAllCaps="false"/>
+
+                <RadioButton
+                    android:id="@+id/missed_radiobtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/call_log_missed"
+                    android:textAllCaps="false"/>
+            </RadioGroup>
+
+            <RadioGroup
+                android:id="@+id/call_log_volte_feature_radiogroup"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:baselineAligned="false"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <RadioButton
+                    android:id="@+id/call_log_volte_radiobtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/call_log_volte"
+                    android:textAllCaps="false"/>
+
+                <RadioButton
+                    android:id="@+id/call_log_volte_hd_radiobtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/call_log_volte_hd"
+                    android:textAllCaps="false"/>
+
+                <RadioButton
+                    android:id="@+id/call_log_vowifi_hd_radiobtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/call_log_volte_hd"
+                    android:textAllCaps="false"/>
+
+                <RadioButton
+                    android:id="@+id/call_log_volte_none_radiobtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:ellipsize="end"
+                    android:maxLines="1"
+                    android:text="@string/call_log_volte_none"
+                    android:textAllCaps="false"/>
+
+            </RadioGroup>
+
+            <CheckBox
+                android:id="@+id/encrypted_call_chkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/call_log_encrypt"
+                android:textAllCaps="false"
+                android:visibility="gone"/>
+
+            <CheckBox
+                android:id="@+id/video_call_chkbox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/call_log_video"
+                android:textAllCaps="false"
+                android:visibility="gone"/>
+
+        </LinearLayout>
+
+        <CheckBox
+            android:id="@+id/call_log_roll_dice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/call_log_roll_dice"/>
 
         <android.support.design.widget.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
             <EditText
-                android:id="@+id/call_log_number_edtxt"
+                android:id="@+id/call_log_quantity_edtxt"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="@string/calllog_number_hint"
-                android:inputType="number"/>
+                android:hint="@string/calllog_quantity_hint"
+                android:inputType="numberSigned"/>
 
         </android.support.design.widget.TextInputLayout>
 
-        <RadioGroup
-            android:id="@+id/call_log_type_radioGroup"
+        <Button
+            android:id="@+id/start_fork_calllog_btn"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
-
-            <RadioButton
-                android:id="@+id/outgoing_radiobtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/call_log_outgoing"
-                android:textAllCaps="false"/>
-
-            <RadioButton
-                android:id="@+id/rejected_radiobtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/call_log_rejected"
-                android:textAllCaps="false"/>
-
-            <RadioButton
-                android:id="@+id/answered_radiobtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/call_log_incoming"
-                android:textAllCaps="false"/>
-
-            <RadioButton
-                android:id="@+id/missed_radiobtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/call_log_missed"
-                android:textAllCaps="false"/>
-        </RadioGroup>
-
-        <RadioGroup
-            android:id="@+id/call_log_volte_feature_radiogroup"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:baselineAligned="false"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <RadioButton
-                android:id="@+id/call_log_volte_radiobtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/call_log_volte"
-                android:textAllCaps="false"/>
-
-            <RadioButton
-                android:id="@+id/call_log_volte_hd_radiobtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/call_log_volte_hd"
-                android:textAllCaps="false"/>
-
-            <RadioButton
-                android:id="@+id/call_log_vowifi_hd_radiobtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/call_log_volte_hd"
-                android:textAllCaps="false"/>
-
-            <RadioButton
-                android:id="@+id/call_log_volte_none_radiobtn"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:ellipsize="end"
-                android:maxLines="1"
-                android:text="@string/call_log_volte_none"
-                android:textAllCaps="false"/>
-
-        </RadioGroup>
-
-        <CheckBox
-            android:id="@+id/encrypted_call_chkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/call_log_encrypt"
-            android:textAllCaps="false"
-            android:visibility="gone"/>
-
-        <CheckBox
-            android:id="@+id/video_call_chkbox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/call_log_video"
-            android:textAllCaps="false"
-            android:visibility="gone"/>
+            android:text="@string/start_fork_call_logs"
+            android:textAllCaps="false"/>
 
     </LinearLayout>
-
-    <CheckBox
-        android:id="@+id/call_log_roll_dice"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/call_log_roll_dice"/>
-
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <EditText
-            android:id="@+id/call_log_quantity_edtxt"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="@string/calllog_quantity_hint"
-            android:inputType="numberSigned"/>
-
-    </android.support.design.widget.TextInputLayout>
-
-    <Button
-        android:id="@+id/start_fork_calllog_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/start_fork_call_logs"
-        android:textAllCaps="false"/>
-
-</LinearLayout>
+</ScrollView>

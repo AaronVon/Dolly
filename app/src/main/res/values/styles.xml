@@ -12,8 +12,10 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/fork_btn_margin</item>
-        <item name="android:foreground">?android:attr/selectableItemBackground</item>
-        <item name="android:background">@drawable/fork_btn_shape</item>
+        <!--<item name="android:foreground">?android:attr/selectableItemBackground</item>-->
+        <item name="android:clickable">true</item>
+        <item name="android:selectable">true</item>
+        <item name="android:background">@drawable/ripple_btn</item>
         <item name="android:paddingTop">@dimen/fork_btn_padding</item>
         <item name="android:paddingBottom">@dimen/fork_btn_padding</item>
         <item name="android:gravity">center</item>

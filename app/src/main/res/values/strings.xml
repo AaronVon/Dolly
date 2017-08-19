@@ -28,7 +28,7 @@
     <string name="call_log_quantity_msg">Input a valid quantity.</string>
     <string name="contact_quantity_msg">Input a valid quantity.</string>
 
-    <string name="fork_task_forking">Forking...</string>
+    <string name="fork_task_forking">Forking\u2026</string>
     <string name="fork_task_completed">Fork Completed.</string>
     <string name="fork_task_canceled">Fork Canceled.</string>
     <string name="fork_task_failed">Fork Failed.</string>

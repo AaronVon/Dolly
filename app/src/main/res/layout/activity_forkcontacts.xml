@@ -1,35 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/activity_fork_contact_layout"
-              xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent"
-              android:orientation="vertical"
-              android:padding="@dimen/activity_horizontal_margin">
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <LinearLayout android:id="@+id/activity_fork_contact_layout"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="vertical"
+                  android:padding="@dimen/activity_horizontal_margin">
 
-        <EditText
-            android:id="@+id/contact_quantity_edtxt"
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <EditText
+                android:id="@+id/contact_quantity_edtxt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/calllog_quantity_hint"
+                android:inputType="numberSigned"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/fork_contact_all_type"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/calllog_quantity_hint"
-            android:inputType="numberSigned"/>
+            android:text="@string/fork_contacts_all_type"/>
 
-    </android.support.design.widget.TextInputLayout>
-
-    <CheckBox
-        android:id="@+id/fork_contact_all_type"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/fork_contacts_all_type"/>
-
-    <Button
-        android:id="@+id/start_fork_contact_btn"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/start_fork_contact"/>
+        <Button
+            android:id="@+id/start_fork_contact_btn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/start_fork_contact"/>
 
 
-</LinearLayout>
+    </LinearLayout>
+</ScrollView>

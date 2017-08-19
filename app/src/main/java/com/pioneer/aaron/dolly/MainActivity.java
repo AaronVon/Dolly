@@ -10,7 +10,6 @@ import com.pioneer.aaron.dolly.fork.DataBaseOperator;
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogActivity;
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
 import com.pioneer.aaron.dolly.fork.contacts.ForkContactsActivity;
-import com.pioneer.aaron.dolly.utils.Matrix;
 
 import java.util.HashMap;
 
@@ -66,9 +65,9 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
             if (columnExists.get(ForkCallLogData.SUBJECT)
                     && columnExists.get(ForkCallLogData.POST_CALL_TEXT)
                     && columnExists.get(ForkCallLogData.IS_PRIMARY)) {
-                mPresenter.vibrate();
-                mPresenter.forkRCS(MainActivity.this);
             }
+            mPresenter.vibrate();
+            mPresenter.forkRCS(MainActivity.this);
             return true;
         }
     };
