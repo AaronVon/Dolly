@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
-import android.widget.Button;
 
 import com.pioneer.aaron.dolly.fork.DataBaseOperator;
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogActivity;
@@ -40,21 +39,18 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
         mPresenter.loadResInBackground();
     }
 
-    View.OnClickListener mOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.fork_call_log_btn:
-                    Intent forkCallLogIntent = new Intent(MainActivity.this, ForkCallLogActivity.class);
-                    startActivity(forkCallLogIntent);
-                    break;
-                case R.id.fork_contact_btn:
-                    Intent forkContactIntent = new Intent(MainActivity.this, ForkContactsActivity.class);
-                    startActivity(forkContactIntent);
-                    break;
-                default:
-                    break;
-            }
+    View.OnClickListener mOnClickListener = v -> {
+        switch (v.getId()) {
+            case R.id.fork_call_log_btn:
+                Intent forkCallLogIntent = new Intent(MainActivity.this, ForkCallLogActivity.class);
+                startActivity(forkCallLogIntent);
+                break;
+            case R.id.fork_contact_btn:
+                Intent forkContactIntent = new Intent(MainActivity.this, ForkContactsActivity.class);
+                startActivity(forkContactIntent);
+                break;
+            default:
+                break;
         }
     };
 
@@ -65,9 +61,9 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
             if (columnExists.get(ForkCallLogData.SUBJECT)
                     && columnExists.get(ForkCallLogData.POST_CALL_TEXT)
                     && columnExists.get(ForkCallLogData.IS_PRIMARY)) {
+                mPresenter.vibrate();
+                mPresenter.forkRCS(MainActivity.this);
             }
-            mPresenter.vibrate();
-            mPresenter.forkRCS(MainActivity.this);
             return true;
         }
     };

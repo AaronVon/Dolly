@@ -144,17 +144,14 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         super.onResume();
     }
 
-    View.OnClickListener mOnClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch (v.getId()) {
-                case R.id.start_fork_calllog_btn:
-                    startForkCallLogs();
-                    break;
+    View.OnClickListener mOnClickListener = v -> {
+        switch (v.getId()) {
+            case R.id.start_fork_calllog_btn:
+                startForkCallLogs();
+                break;
 
-                default:
-                    break;
-            }
+            default:
+                break;
         }
     };
 
@@ -241,16 +238,13 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
         return data;
     }
 
-    CompoundButton.OnCheckedChangeListener mCheckedChangeListener = new CompoundButton.OnCheckedChangeListener() {
-        @Override
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            switch (buttonView.getId()) {
-                case R.id.call_log_roll_dice:
-                    updateButtonsStates();
-                    break;
-                default:
-                    break;
-            }
+    CompoundButton.OnCheckedChangeListener mCheckedChangeListener = (buttonView, isChecked) -> {
+        switch (buttonView.getId()) {
+            case R.id.call_log_roll_dice:
+                updateButtonsStates();
+                break;
+            default:
+                break;
         }
     };
 

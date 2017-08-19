@@ -117,37 +117,31 @@ public class MainPresenter implements IMainContract.Presenter {
 
         quantityEditText.setText(String.valueOf(CALLLOG_DEFAULT_QUANTITY));
         final CheckBox rollDiceCheckBox = (CheckBox) view.findViewById(R.id.call_log_roll_dice);
-        rollDiceCheckBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                boolean enabled = !isChecked;
-                numberEditText.setEnabled(enabled);
-                subjectEditText.setEnabled(enabled);
-                postCallEditText.setEnabled(enabled);
-                int childSize = typeRadioGroup.getChildCount();
-                for (int i =0;i<childSize;++i) {
-                    RadioButton child = (RadioButton) typeRadioGroup.getChildAt(i);
-                    child.setEnabled(enabled);
-                }
+        rollDiceCheckBox.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            boolean enabled = !isChecked;
+            numberEditText.setEnabled(enabled);
+            subjectEditText.setEnabled(enabled);
+            postCallEditText.setEnabled(enabled);
+            int childSize = typeRadioGroup.getChildCount();
+            for (int i =0;i<childSize;++i) {
+                RadioButton child = (RadioButton) typeRadioGroup.getChildAt(i);
+                child.setEnabled(enabled);
             }
         });
 
         builder.setTitle(R.string.menu_call_log_rcs)
                 .setNegativeButton(R.string.dialog_cancel, null)
-                .setPositiveButton(R.string.start_fork_call_logs, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        if (rollDiceCheckBox.isChecked()) {
-                            startForkRandomRCS(Integer.parseInt(quantityEditText.getText().toString()));
-                        } else {
-                            ForkCallLogData data = new ForkCallLogData();
-                            data.setPhoneNum(numberEditText.getText().toString());
-                            data.setType(type);
-                            data.setSubject(subjectEditText.getText().toString());
-                            data.setPostCallText(postCallEditText.getText().toString());
-                            data.setQuantity(Integer.parseInt(quantityEditText.getText().toString()));
-                            startForkSpecifiedRCS(data);
-                        }
+                .setPositiveButton(R.string.start_fork_call_logs, (dialog, which) -> {
+                    if (rollDiceCheckBox.isChecked()) {
+                        startForkRandomRCS(Integer.parseInt(quantityEditText.getText().toString()));
+                    } else {
+                        ForkCallLogData data = new ForkCallLogData();
+                        data.setPhoneNum(numberEditText.getText().toString());
+                        data.setType(type);
+                        data.setSubject(subjectEditText.getText().toString());
+                        data.setPostCallText(postCallEditText.getText().toString());
+                        data.setQuantity(Integer.parseInt(quantityEditText.getText().toString()));
+                        startForkSpecifiedRCS(data);
                     }
                 })
                 .setView(view);
@@ -159,8 +153,8 @@ public class MainPresenter implements IMainContract.Presenter {
         RadioButton outgoingRadioButton = (RadioButton) view.findViewById(R.id.outgoing_radiobtn);
         outgoingRadioButton.setChecked(true);
         RadioButton rejectedRadioButton = (RadioButton) view.findViewById(R.id.rejected_radiobtn);
-        RadioButton incomingRadioButton = (RadioButton) view.findViewById(R.id.rejected_radiobtn);
-        RadioButton missedRadioButton = (RadioButton) view.findViewById(R.id.rejected_radiobtn);
+        RadioButton incomingRadioButton = (RadioButton) view.findViewById(R.id.incoming_radiobtn);
+//        RadioButton missedRadioButton = (RadioButton) view.findViewById(R.id.missed_radiobtn);
         int type;
         if (outgoingRadioButton.isChecked()) {
             type = CallLog.Calls.OUTGOING_TYPE;

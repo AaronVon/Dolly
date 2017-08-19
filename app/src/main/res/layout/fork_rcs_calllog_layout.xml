@@ -88,7 +88,7 @@
                 android:textAllCaps="false"/>
 
             <RadioButton
-                android:id="@+id/answered_radiobtn"
+                android:id="@+id/incoming_radiobtn"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
