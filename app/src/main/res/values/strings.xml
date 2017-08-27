@@ -42,7 +42,7 @@
     <string name="fork_contacts_all_type">All types, including E-mail, Address, IM, Organization, Nickname, Website, Relation, Event and Note</string>
 
     <!--shortcuts-->
-    <string name="shortcut_fork_contact">Fork Contacts</string>
-    <string name="shortcut_fork_call_log">Fork Call Log</string>
+    <string name="shortcut_fork_contact">@string/fork_contact_btn</string>
+    <string name="shortcut_fork_call_log">@string/fork_calllog_btn</string>
     <string name="shortcut_disabled">Shortcut Disabled</string>
 </resources>
