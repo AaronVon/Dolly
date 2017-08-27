@@ -5,16 +5,21 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.os.AsyncTask;
 import android.os.IBinder;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.pioneer.aaron.dolly.R;
 import com.pioneer.aaron.dolly.fork.DataBaseOperator;
 import com.pioneer.aaron.dolly.fork.ForkService;
 import com.pioneer.aaron.dolly.fork.ForkTask;
+import com.pioneer.aaron.dolly.utils.Matrix;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
 import java.util.HashMap;
+
+import static android.content.ContentValues.TAG;
 
 /**
  * Created by Aaron on 4/28/17.
@@ -63,19 +68,35 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
         }
     }
 
-
     @Override
     public boolean checkPermissions(Activity activity) {
         return PermissionChecker.checkPermissions(activity);
     }
 
     @Override
-    public void loadResInBackground() {
-        // currently nothing to do.
+    public void loadResInBackground(Context context) {
+        // load existing contact phone number
+        AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void>() {
+            @Override
+            protected Void doInBackground(Void[] params) {
+                Matrix.preloadContactPhoneNums(context);
+                return null;
+            }
+        };
+        asyncTask.execute();
     }
 
     @Override
     public void toastForkTask(Context context) {
         Toast.makeText(context, context.getResources().getString(R.string.fork_task_forking), Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onDestroy(Context context) {
+        try {
+            context.unbindService(mServiceConnection);
+        } catch (IllegalStateException ise) {
+            Log.e(TAG, "onDestroy: unbindService IllegalStateException");
+        }
     }
 }

@@ -10,7 +10,9 @@ import android.content.Context;
 public interface IBasePresenter {
     boolean checkPermissions(Activity activity);
 
-    void loadResInBackground();
+    void loadResInBackground(Context context);
 
     void toastForkTask(Context context);
+
+    void onDestroy(Context context);
 }

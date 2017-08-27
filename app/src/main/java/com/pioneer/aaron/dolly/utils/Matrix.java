@@ -1,6 +1,8 @@
 package com.pioneer.aaron.dolly.utils;
 
 import android.content.Context;
+import android.database.Cursor;
+import android.provider.BaseColumns;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
@@ -76,6 +78,7 @@ public class Matrix {
     private static int mLocaleSize = 0;
 
     private static final Object sLock = new Object();
+    private static final Object sContactNumberLock = new Object();
 
     /**
      * Load resources such as name, and organization, etc.
@@ -159,6 +162,31 @@ public class Matrix {
         return arrayList;
     }
 
+    private static ArrayList<String> mNumbers = null;
+    private static int mNumberSize = 0;
+
+    public static void preloadContactPhoneNums(Context context) {
+        synchronized (sContactNumberLock) {
+            if (mNumbers == null) {
+                mNumbers = new ArrayList<>();
+                Cursor people = context.getContentResolver().query(
+                        ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
+                        new String[]{ContactsContract.CommonDataKinds.Phone.NUMBER},
+                        null, null, BaseColumns._ID + " LIMIT 500"
+                );
+                if (people != null) {
+                    int phoneNumColumneIndex = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER);
+                    people.moveToFirst();
+                    while (people.moveToNext()) {
+                        mNumbers.add(people.getString(phoneNumColumneIndex));
+                    }
+                    mNumberSize = mNumbers.size();
+                    people.close();
+                }
+            }
+        }
+    }
+
     private static void setLocales() {
         if (mLocales == null) {
             mLocales = Locale.getAvailableLocales();
@@ -166,10 +194,24 @@ public class Matrix {
         }
     }
 
-
     public static String getRandomPhoneNum() {
         int num = Math.abs(sRandom.nextInt());
         return String.valueOf(num);
+    }
+
+    public static String getRandomPhoneNumWithExistingContact(Context context) {
+        if (mNumbers == null) {
+            preloadContactPhoneNums(context);
+        }
+        if (sRandom.nextBoolean()) {
+            return getRandomPhoneNum();
+        } else {
+            if (mNumberSize <= 0) {
+                return getRandomPhoneNum();
+            } else {
+                return mNumbers.get(sRandom.nextInt(mNumberSize));
+            }
+        }
     }
 
     /**

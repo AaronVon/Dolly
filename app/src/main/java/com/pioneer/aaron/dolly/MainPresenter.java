@@ -81,7 +81,7 @@ public class MainPresenter implements IMainContract.Presenter {
     }
 
     @Override
-    public void loadResInBackground() {
+    public void loadResInBackground(Context context) {
         AsyncTask<Void,Void,Void> loadResAsyncTask = new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {

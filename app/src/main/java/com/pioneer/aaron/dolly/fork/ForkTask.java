@@ -90,7 +90,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         int bulkSize = 0;
         for (int i = 0; i < quantity; ++i) {
             ContentValues values = new ContentValues();
-            values.put(CallLog.Calls.NUMBER, Matrix.getRandomPhoneNum());
+            values.put(CallLog.Calls.NUMBER, Matrix.getRandomPhoneNumWithExistingContact(mContext));
             values.put(CallLog.Calls.TYPE, Matrix.getRandomType());
             values.put(CallLog.Calls.DATE, System.currentTimeMillis());
             if (isRCS) {

@@ -19,18 +19,19 @@ import com.pioneer.aaron.dolly.utils.PermissionChecker;
  */
 
 public class ForkContactPresenter implements IForkContactContract.Presenter {
+    private static final String TAG = "ForkContactPresenter";
 
     private ForkService.ForkBinder mForkBinder;
     private ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            Log.i("Aaron", "onServiceConnected: ");
+            Log.d(TAG, "onServiceConnected: ");
             mForkBinder = (ForkService.ForkBinder) service;
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            Log.i("Aaron", "onServiceDisconnected: ");
+            Log.d(TAG, "onServiceDisconnected: ");
         }
     };
 
@@ -46,7 +47,7 @@ public class ForkContactPresenter implements IForkContactContract.Presenter {
     }
 
     @Override
-    public void loadResInBackground() {
+    public void loadResInBackground(Context context) {
 
     }
 
@@ -66,6 +67,10 @@ public class ForkContactPresenter implements IForkContactContract.Presenter {
 
     @Override
     public void onDestroy(Context context) {
-        context.unbindService(mServiceConnection);
+        try {
+            context.unbindService(mServiceConnection);
+        } catch (IllegalStateException ise) {
+            Log.e(TAG, "onDestroy: unbindService IllegalStateException");
+        }
     }
 }

@@ -97,7 +97,7 @@ public class ForkContactsActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        super.onDestroy();
         mPresenter.onDestroy(this);
+        super.onDestroy();
     }
 }

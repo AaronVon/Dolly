@@ -83,10 +83,9 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forkcalllog);
-//        Slide slide = (Slide) TransitionInflater.from(this).inflateTransition(R.transition.activity_slide);
-//        getWindow().setExitTransition(slide);
 
         mPresenter = new ForkCallLogPresenter(this);
+        mPresenter.loadResInBackground(this);
         if (mPresenter.checkPermissions(this)) {
             initUI();
         }
@@ -276,7 +275,7 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
 
     @Override
     protected void onDestroy() {
-
+        mPresenter.onDestroy(this);
         super.onDestroy();
     }
 }

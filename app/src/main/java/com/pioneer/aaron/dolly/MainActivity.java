@@ -36,7 +36,7 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
     protected void onResume() {
         super.onResume();
         mPresenter.checkPermissions(this);
-        mPresenter.loadResInBackground();
+        mPresenter.loadResInBackground(this);
     }
 
     View.OnClickListener mOnClickListener = v -> {
