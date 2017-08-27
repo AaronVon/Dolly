@@ -77,6 +77,7 @@ public class ForkService extends Service {
         public void startFork(int fork_type, int forkQuantity, ForkCallLogData data) {
             if (mForkTask == null) {
                 mForkTask = new ForkTask(mForkListener, getApplicationContext());
+                toastForking(true);
                 switch (fork_type) {
                     case ForkTask.FORK_TYPE_SPECIFIED_CALLLOGS:
                         mForkTask.execute(fork_type, forkQuantity, data);
@@ -110,10 +111,7 @@ public class ForkService extends Service {
                         break;
                 }
             } else {
-                Toast.makeText(ForkService.this,
-                        getResources().getString(R.string.fork_already_in_procedure_msg),
-                        Toast.LENGTH_SHORT)
-                        .show();
+                toastForking(false);
             }
 
         }
@@ -125,6 +123,10 @@ public class ForkService extends Service {
         }
     }
 
+    private void toastForking(boolean isForking) {
+        Toast.makeText(this, getResources().getString(isForking ? R.string.fork_task_forking : R.string.fork_already_in_procedure_msg),
+                Toast.LENGTH_SHORT).show();
+    }
 
     private NotificationManager getNotificationManager() {
         return (NotificationManager) getSystemService(NOTIFICATION_SERVICE);

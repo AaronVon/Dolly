@@ -12,7 +12,5 @@ public interface IBasePresenter {
 
     void loadResInBackground(Context context);
 
-    void toastForkTask(Context context);
-
     void onDestroy(Context context);
 }

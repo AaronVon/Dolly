@@ -99,11 +99,6 @@ public class MainPresenter implements IMainContract.Presenter {
     }
 
     @Override
-    public void toastForkTask(Context context) {
-        Toast.makeText(context, context.getResources().getString(R.string.fork_task_forking), Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
     public void forkRCS(Context context) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         View view = LayoutInflater.from(context).inflate(R.layout.fork_rcs_calllog_layout, null);
