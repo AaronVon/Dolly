@@ -32,6 +32,8 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
     public static final int FORK_TYPE_SPECIFIED_RCS_CALLLOGS = 5;
     public static final int FORK_TYPE_ALL_TYPE_CONTACT = 6;
 
+    public static final int CONTACT_POSSIBLE_NUM_COUNT = 5;
+
     private static final int FORK_BULK_SIZE = 10;
     private Context mContext;
     private IForkListener mForkListener;
@@ -220,6 +222,17 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                     .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                     .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, Matrix.getRandomPhoneNum())
                     .build());
+            if (Matrix.getRandonBoolen()) {
+                int size = Matrix.getRandomInt(CONTACT_POSSIBLE_NUM_COUNT);
+                for (int j = 0; j < size; ++j) {
+                    operations.add(ContentProviderOperation
+                            .newInsert(ContactsContract.Data.CONTENT_URI)
+                            .withValueBackReference(ContactsContract.RawContacts.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                            .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                            .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, Matrix.getRandomPhoneNum())
+                            .build());
+                }
+            }
             if (allType) {
                 /* E-mail */
                 operations.add(ContentProviderOperation

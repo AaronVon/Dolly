@@ -386,4 +386,15 @@ public class Matrix {
     public static String getRandomNote() {
         return "https://github.com/aaronvon";
     }
+
+    public static boolean getRandonBoolen() {
+        return sRandom.nextBoolean();
+    }
+
+    public static int getRandomInt(int range) {
+        if (range >= 0) {
+            return sRandom.nextInt(range);
+        }
+        return 1;
+    }
 }
