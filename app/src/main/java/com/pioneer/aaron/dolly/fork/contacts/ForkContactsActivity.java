@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -14,11 +13,13 @@ import android.widget.EditText;
 import com.pioneer.aaron.dolly.R;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
+import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
+
 /**
  * Created by Aaron on 4/18/17.
  */
 
-public class ForkContactsActivity extends AppCompatActivity {
+public class ForkContactsActivity extends SwipeBackActivity implements IForkContactContract.View {
 
     private IForkContactContract.Presenter mPresenter;
     private static final int CONTACT_DEFAULT_QUANTITY = 20;
@@ -39,6 +40,9 @@ public class ForkContactsActivity extends AppCompatActivity {
     }
 
     private void initUI() {
+        if (isTaskRoot()) {
+            setSwipeBackEnable(false);
+        }
         mContactQuantity = (EditText) findViewById(R.id.contact_quantity_edtxt);
         mContactQuantity.setText(String.valueOf(CONTACT_DEFAULT_QUANTITY));
 

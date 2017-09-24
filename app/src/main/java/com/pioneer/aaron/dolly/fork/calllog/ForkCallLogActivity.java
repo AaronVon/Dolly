@@ -26,11 +26,13 @@ import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
 import java.util.HashMap;
 
+import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
+
 /**
  * Created by Aaron on 4/18/17.
  */
 
-public class ForkCallLogActivity extends AppCompatActivity implements IForkCallLogContract.View {
+public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallLogContract.View {
     private static final String TAG = "Aaron";
     private IForkCallLogContract.Presenter mPresenter;
 
@@ -92,6 +94,9 @@ public class ForkCallLogActivity extends AppCompatActivity implements IForkCallL
     }
 
     private void initUI() {
+        if (isTaskRoot()) {
+            setSwipeBackEnable(false);
+        }
         mColumnsExist = mPresenter.getColumnsExist(getApplicationContext());
 
         mPhoneNumberEditText = (EditText) findViewById(R.id.call_log_number_edtxt);

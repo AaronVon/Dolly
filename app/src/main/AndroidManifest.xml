@@ -29,11 +29,13 @@
         <activity
             android:name=".fork.calllog.ForkCallLogActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/SwipeBackTheme"/>
         <activity
             android:name=".fork.contacts.ForkContactsActivity"
             android:launchMode="singleTask"
-            android:screenOrientation="portrait"/>
+            android:screenOrientation="portrait"
+            android:theme="@style/SwipeBackTheme"/>
 
         <service
             android:name=".fork.ForkService"
