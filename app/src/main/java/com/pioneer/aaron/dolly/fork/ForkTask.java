@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.util.Log;
 
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
 import com.pioneer.aaron.dolly.utils.Matrix;
@@ -92,8 +93,10 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         int bulkSize = 0;
         for (int i = 0; i < quantity; ++i) {
             ContentValues values = new ContentValues();
+            int call_log_type = Matrix.getRandomType();
+            values.put(CallLog.Calls.NEW, call_log_type == CallLog.Calls.MISSED_TYPE ? 1 : 0);
             values.put(CallLog.Calls.NUMBER, Matrix.getRandomPhoneNumWithExistingContact(mContext));
-            values.put(CallLog.Calls.TYPE, Matrix.getRandomType());
+            values.put(CallLog.Calls.TYPE, call_log_type);
             values.put(CallLog.Calls.DATE, System.currentTimeMillis());
             if (isRCS) {
                 values.put(ForkCallLogData.IS_PRIMARY, 1);
@@ -136,6 +139,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         return TYPE_COMPLETED;
     }
 
+    private int total = 0;
     private int forkSpecifiedCallLog(ForkCallLogData data, boolean isRCS) {
         if (mContext == null || data == null) {
             return TYPE_FAILED;
@@ -145,6 +149,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         ContentValues values = new ContentValues();
         values.put(CallLog.Calls.NUMBER, data.getPhoneNum());
         values.put(CallLog.Calls.TYPE, data.getType());
+        values.put(CallLog.Calls.NEW, data.getType() == CallLog.Calls.MISSED_TYPE ? 0 : 1);
         values.put(CallLog.Calls.DATE, System.currentTimeMillis());
 
         if (isRCS) {
