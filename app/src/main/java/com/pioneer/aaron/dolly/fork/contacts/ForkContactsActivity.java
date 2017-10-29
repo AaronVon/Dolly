@@ -27,6 +27,7 @@ public class ForkContactsActivity extends SwipeBackActivity implements IForkCont
     private EditText mContactQuantity;
     private Button mStartForkButton;
     private CheckBox mContactsAllTypeCheckBox;
+    private CheckBox mContactsAvatar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -50,6 +51,7 @@ public class ForkContactsActivity extends SwipeBackActivity implements IForkCont
         mStartForkButton.setOnClickListener(mOnClickListener);
 
         mContactsAllTypeCheckBox = (CheckBox) findViewById(R.id.fork_contact_all_type);
+        mContactsAvatar = (CheckBox) findViewById(R.id.fork_contact_avatar);
     }
 
     @Override
@@ -81,7 +83,7 @@ public class ForkContactsActivity extends SwipeBackActivity implements IForkCont
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.start_fork_contact_btn:
-                    startFork(mContactsAllTypeCheckBox.isChecked());
+                    startFork(mContactsAllTypeCheckBox.isChecked(), mContactsAvatar.isChecked());
                     break;
                 default:
                     break;
@@ -89,13 +91,13 @@ public class ForkContactsActivity extends SwipeBackActivity implements IForkCont
         }
     };
 
-    private void startFork(boolean allTypes) {
+    private void startFork(boolean allTypes, boolean avatarIncluded) {
         int quantity = Integer.parseInt(mContactQuantity.getText().toString());
         if (quantity <= 0) {
             Snackbar.make(findViewById(R.id.activity_fork_contact_layout), R.string.contact_quantity_msg, Snackbar.LENGTH_SHORT)
                     .show();
         } else {
-            mPresenter.forkContacts(this, quantity, allTypes);
+            mPresenter.forkContacts(this, quantity, allTypes, avatarIncluded);
         }
     }
 

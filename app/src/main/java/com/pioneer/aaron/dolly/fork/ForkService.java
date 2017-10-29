@@ -71,10 +71,18 @@ public class ForkService extends Service {
 
     public class ForkBinder extends Binder {
         public void startFork(int fork_type, int forkQuantity) {
-            startFork(fork_type, forkQuantity, null);
+            startFork(fork_type, forkQuantity, false);
+        }
+
+        public void startFork(int fork_type, int forkQuantity, boolean avatarIncluded) {
+            startFork(fork_type, forkQuantity, avatarIncluded, null);
         }
 
         public void startFork(int fork_type, int forkQuantity, ForkCallLogData data) {
+            startFork(fork_type, forkQuantity, false, data);
+        }
+
+        public void startFork(int fork_type, int forkQuantity, boolean avatarIncluded, ForkCallLogData data) {
             if (mForkTask == null) {
                 mForkTask = new ForkTask(mForkListener, getApplicationContext());
                 toastForking(true);
@@ -90,12 +98,12 @@ public class ForkService extends Service {
                         break;
 
                     case ForkTask.FORK_TYPE_RANDOM_CONTACT:
-                        mForkTask.execute(fork_type, forkQuantity);
+                        mForkTask.execute(fork_type, forkQuantity, avatarIncluded);
                         total = forkQuantity;
                         break;
 
                     case ForkTask.FORK_TYPE_ALL_TYPE_CONTACT:
-                        mForkTask.execute(fork_type, forkQuantity);
+                        mForkTask.execute(fork_type, forkQuantity, avatarIncluded);
                         total = forkQuantity;
                         break;
 

@@ -1,18 +1,26 @@
 package com.pioneer.aaron.dolly.utils;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.provider.BaseColumns;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.pioneer.aaron.dolly.R;
+
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Random;
@@ -77,6 +85,9 @@ public class Matrix {
     private static Locale[] mLocales = null;
     private static int mLocaleSize = 0;
 
+    private static final String PATH_AVATARS = "avatars";
+    private static String[] mAvatarFileNames = null;
+
     private static final Object sLock = new Object();
     private static final Object sContactNumberLock = new Object();
 
@@ -107,6 +118,7 @@ public class Matrix {
                     setLocales();
                 }
             }
+            loadAvatarsFileNames(context);
         }
     }
 
@@ -396,5 +408,48 @@ public class Matrix {
             return sRandom.nextInt(range);
         }
         return 1;
+    }
+
+    private static void loadAvatarsFileNames(Context context) {
+        try {
+            mAvatarFileNames = context.getAssets().list(PATH_AVATARS);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static byte[] getRandomAvatar(Context context) {
+        byte[] avatarBytes = null;
+        Bitmap avatar = null;
+        String avatarFileName = "";
+        if (mAvatarFileNames == null) {
+            Log.i(TAG, "getRandomAvatar: failed to get avatar assets. Using default avatar");
+            avatar = BitmapFactory.decodeResource(context.getResources(), R.mipmap.fork_icon);
+        } else {
+            avatarFileName = mAvatarFileNames[sRandom.nextInt(mAvatarFileNames.length)];
+            try {
+                InputStream avatarInputStream = context.getAssets().open(PATH_AVATARS + "/" + avatarFileName);
+                avatar = BitmapFactory.decodeStream(avatarInputStream);
+
+                avatarInputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (avatar == null) {
+            Log.e(TAG, "getRandomAvatar: avatar bitmap is null");
+            return null;
+        }
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        avatar.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+        avatarBytes = outputStream.toByteArray();
+
+        avatar.recycle();
+        try {
+            outputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return avatarBytes;
     }
 }

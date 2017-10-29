@@ -40,6 +40,7 @@
     <string name="dialog_cancel">Cancel</string>
 
     <string name="fork_contacts_all_type">All types, including E-mail, Address, IM, Organization, Nickname, Website, Relation, Event and Note</string>
+    <string name="fork_contacts_avatar">Generate Avatar</string>
 
     <!--shortcuts-->
     <string name="shortcut_fork_contact">@string/fork_contact_btn</string>

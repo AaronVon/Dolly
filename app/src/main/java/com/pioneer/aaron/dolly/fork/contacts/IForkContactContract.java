@@ -16,7 +16,7 @@ public interface IForkContactContract {
     }
 
     interface Presenter extends IBasePresenter {
-        void forkContacts(Context context, int quantity, boolean allTypes);
+        void forkContacts(Context context, int quantity, boolean allTypes, boolean avatarIncluded);
 
         void onDestroy(Context context);
     }

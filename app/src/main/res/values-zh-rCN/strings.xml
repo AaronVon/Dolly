@@ -40,6 +40,7 @@
     <string name="dialog_cancel">Cancel</string>
 
     <string name="fork_contacts_all_type">全字段, 如 E-mail, 地址, IM, 公司, 昵称, 网址, 关系, 重要事件</string>
+    <string name="fork_contacts_avatar">生成头像</string>
 
     <!--shortcuts-->
     <string name="shortcut_fork_contact">@string/fork_contact_btn</string>

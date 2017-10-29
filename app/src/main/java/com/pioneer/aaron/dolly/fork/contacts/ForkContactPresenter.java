@@ -7,9 +7,7 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.util.Log;
-import android.widget.Toast;
 
-import com.pioneer.aaron.dolly.R;
 import com.pioneer.aaron.dolly.fork.ForkService;
 import com.pioneer.aaron.dolly.fork.ForkTask;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
@@ -52,10 +50,10 @@ public class ForkContactPresenter implements IForkContactContract.Presenter {
     }
 
     @Override
-    public void forkContacts(Context context, int quantity, boolean allTypes) {
+    public void forkContacts(Context context, int quantity, boolean allTypes, boolean avatarIncluded) {
         if (mForkBinder != null) {
             mForkBinder.startFork(allTypes ? ForkTask.FORK_TYPE_ALL_TYPE_CONTACT : ForkTask.FORK_TYPE_RANDOM_CONTACT,
-                    quantity);
+                    quantity, avatarIncluded);
         }
     }
 

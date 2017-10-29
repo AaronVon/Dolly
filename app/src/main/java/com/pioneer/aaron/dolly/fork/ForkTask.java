@@ -21,6 +21,7 @@ import java.util.HashMap;
  */
 
 public class ForkTask extends AsyncTask<Object, Integer, Integer> {
+    private static final String TAG = "ForkTask";
 
     public static final int TYPE_COMPLETED = 1;
     public static final int TYPE_CANCELED = 2;
@@ -62,10 +63,10 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                     result = forkSpecifiedCallLog((ForkCallLogData) params[2], false);
                     break;
                 case FORK_TYPE_RANDOM_CONTACT:
-                    result = forkContacts((int) params[1], false);
+                    result = forkContacts((int) params[1], false, (Boolean) params[2]);
                     break;
                 case FORK_TYPE_ALL_TYPE_CONTACT:
-                    result = forkContacts((int) params[1], true);
+                    result = forkContacts((int) params[1], true, (Boolean) params[2]);
                     break;
                 case FORK_TYPE_RANDOM_RCS_CALLLOGS:
                     result = forkRandomCallLogs((int) params[1], true);
@@ -200,7 +201,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         return TYPE_COMPLETED;
     }
 
-    private int forkContacts(int quantity, boolean allType) {
+    private int forkContacts(int quantity, boolean allType, boolean avatarIncluded) {
         if (mContext == null || quantity <= 0) {
             return TYPE_FAILED;
         }
@@ -312,6 +313,22 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                         .withValue(ContactsContract.CommonDataKinds.Note.NOTE, Matrix.getRandomNote())
                         .build());
             }
+
+            /* Avatar */
+            if (avatarIncluded) {
+                byte[] avatarBytes = Matrix.getRandomAvatar(mContext);
+                if (avatarBytes != null) {
+                    operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                            .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                            .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
+                            .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                            .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, avatarBytes)
+                            .build());
+                } else {
+                    Log.d(TAG, "Failed to set avatar due to null byte[]");
+                }
+            }
+
             ++bulkSize;
             if (mForkCanceled) {
                 return TYPE_CANCELED;
