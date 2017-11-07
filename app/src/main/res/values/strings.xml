@@ -13,7 +13,7 @@
 
     <!-- call log check boxes -->
     <string name="call_log_volte">VoLTE</string>
-    <string name="call_log_vowifi">VoViFi</string>
+    <string name="call_log_vowifi">VoWiFi</string>
     <string name="call_log_volte_hd">HD</string>
     <string name="call_log_volte_none">None</string>
     <string name="call_log_encrypt">Encrypted Call</string>
