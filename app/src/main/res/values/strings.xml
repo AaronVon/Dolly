@@ -2,7 +2,8 @@
     <string name="app_name">Forks</string>
     <string name="fork_calllog_btn">Fork Call Log</string>
     <string name="fork_contact_btn">Fork Contact</string>
-    <string name="calllog_number_hint">Specify a number or leave empty for random number</string>
+    <string name="fork_vvm_btn">Fork  VVM</string>
+    <string name="calllog_number_hint">Specify a number</string>
     <string name="calllog_quantity_hint">Call log quantity you desire</string>
 
     <!-- call log radio buttons -->

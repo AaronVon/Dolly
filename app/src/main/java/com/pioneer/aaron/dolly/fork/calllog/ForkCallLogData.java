@@ -44,11 +44,7 @@ public class ForkCallLogData {
     }
 
     public void setPhoneNum(String phoneNum) {
-        if (TextUtils.isEmpty(phoneNum)) {
-            mPhoneNum = Matrix.getRandomPhoneNum();
-        } else {
-            mPhoneNum = phoneNum;
-        }
+        mPhoneNum = phoneNum;
     }
 
     public void setType(int type) {

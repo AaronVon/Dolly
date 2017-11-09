@@ -23,6 +23,8 @@ public interface IForkCallLogContract {
         void forkRandomCallLogs(Context context, int quantity);
 
         void forkSpecifiedCallLog(Context context, ForkCallLogData data);
+
+        void forkVvmCallLog(Context context, String phoneNumber);
     }
 
 }

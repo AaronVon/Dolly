@@ -70,6 +70,13 @@ public class ForkService extends Service {
     }
 
     public class ForkBinder extends Binder {
+
+        public void startFork(int fork_type, String phoneNumber) {
+            ForkCallLogData data = new ForkCallLogData();
+            data.setPhoneNum(phoneNumber);
+            startFork(fork_type, 0, false, data);
+        }
+
         public void startFork(int fork_type, int forkQuantity) {
             startFork(fork_type, forkQuantity, false);
         }
@@ -114,6 +121,10 @@ public class ForkService extends Service {
                     case ForkTask.FORK_TYPE_SPECIFIED_RCS_CALLLOGS:
                         mForkTask.execute(fork_type, forkQuantity, data);
                         total = forkQuantity;
+                        break;
+                    case ForkTask.FORK_TYPE_VVM:
+                        mForkTask.execute(fork_type, data);
+                        total = 1;
                         break;
                     default:
                         break;

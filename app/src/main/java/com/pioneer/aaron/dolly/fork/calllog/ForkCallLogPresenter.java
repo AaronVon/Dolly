@@ -65,6 +65,13 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
     }
 
     @Override
+    public void forkVvmCallLog(Context context, String phoneNumber) {
+        if (mForkBinder != null) {
+            mForkBinder.startFork(ForkTask.FORK_TYPE_VVM, phoneNumber);
+        }
+    }
+
+    @Override
     public boolean checkPermissions(Activity activity) {
         return PermissionChecker.checkPermissions(activity);
     }

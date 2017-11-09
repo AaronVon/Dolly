@@ -6,10 +6,7 @@ import android.provider.CallLog;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
-import android.transition.Slide;
-import android.transition.TransitionInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -22,7 +19,6 @@ import android.widget.RadioGroup;
 
 import com.pioneer.aaron.dolly.R;
 import com.pioneer.aaron.dolly.fork.DataBaseOperator;
-import com.pioneer.aaron.dolly.utils.Matrix;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
 import java.util.HashMap;
@@ -154,7 +150,6 @@ public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallL
             case R.id.start_fork_calllog_btn:
                 startForkCallLogs();
                 break;
-
             default:
                 break;
         }

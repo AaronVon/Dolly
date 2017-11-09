@@ -1,18 +1,24 @@
 package com.pioneer.aaron.dolly.fork;
 
 import android.content.ContentProviderOperation;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.OperationApplicationException;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.RemoteException;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
+import android.provider.VoicemailContract;
 import android.util.Log;
 
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
 import com.pioneer.aaron.dolly.utils.Matrix;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -33,11 +39,14 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
     public static final int FORK_TYPE_RANDOM_RCS_CALLLOGS = 4;
     public static final int FORK_TYPE_SPECIFIED_RCS_CALLLOGS = 5;
     public static final int FORK_TYPE_ALL_TYPE_CONTACT = 6;
+    public static final int FORK_TYPE_VVM = 7;
 
     public static final int CONTACT_POSSIBLE_NUM_COUNT = 5;
 
     private static final int FORK_BULK_SIZE = 10;
     private Context mContext;
+    private Uri mBaseUri;
+    private ContentResolver mContentResolver;
     private IForkListener mForkListener;
     private boolean mForkCanceled;
     private int mLastProgress;
@@ -47,6 +56,8 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         this.mContext = context;
         mLastProgress = -1;
         mForkCanceled = false;
+        mBaseUri = VoicemailContract.Voicemails.buildSourceUri(context.getPackageName());
+        mContentResolver = context.getContentResolver();
     }
 
     @Override
@@ -74,6 +85,9 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                 case FORK_TYPE_SPECIFIED_RCS_CALLLOGS:
                     result = forkSpecifiedCallLog((ForkCallLogData) params[2], true);
                     break;
+                case FORK_TYPE_VVM:
+                    result = forkVvmCallLog((ForkCallLogData) params[1]);
+                    break;
                 default:
                     result = TYPE_FAILED;
                     break;
@@ -82,6 +96,52 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             result = TYPE_FAILED;
         }
         return result;
+    }
+
+    private int forkVvmCallLog(ForkCallLogData callLogData) {
+        String phoneNumber = callLogData.getPhoneNum();
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(VoicemailContract.Voicemails.NUMBER, phoneNumber);
+        contentValues.put(VoicemailContract.Voicemails.DURATION, 21);
+        contentValues.put(VoicemailContract.Voicemails.DATE, System.currentTimeMillis());
+        contentValues.put(VoicemailContract.Voicemails.IS_READ, 0);
+
+        Uri newVoicemailUri = mContentResolver.insert(mBaseUri, contentValues);
+
+        if (newVoicemailUri == null) {
+            Log.d(TAG, "Fork VVM failed.");
+            return TYPE_FAILED;
+        }
+
+        setVoicemailContent(newVoicemailUri);
+
+        return TYPE_COMPLETED;
+    }
+
+    private void setVoicemailContent(Uri voicemailUri) {
+        try (OutputStream outputStream = mContentResolver.openOutputStream(voicemailUri)) {
+            InputStream inputStream = mContext.getResources().getAssets().open("voicemail_demo.m4a");
+            copyStreamData(inputStream, outputStream);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(VoicemailContract.Voicemails.MIME_TYPE, "audio/amr");
+        contentValues.put(VoicemailContract.Voicemails.HAS_CONTENT, true);
+        int updateCount = mContentResolver.update(voicemailUri, contentValues, null, null);
+        if (updateCount != 1) {
+            Log.e(TAG, "Voicemail should only be updated 1 row, but was " + updateCount);
+        }
+    }
+
+    private void copyStreamData(InputStream inputStream, OutputStream outputStream) throws IOException {
+        byte[] data = new byte[8 * 1024];
+        int numBytes;
+        while ((numBytes = inputStream.read(data)) > 0) {
+            outputStream.write(data, 0, numBytes);
+        }
     }
 
     private int forkRandomCallLogs(int quantity, boolean isRCS) {
@@ -141,6 +201,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
     }
 
     private int total = 0;
+
     private int forkSpecifiedCallLog(ForkCallLogData data, boolean isRCS) {
         if (mContext == null || data == null) {
             return TYPE_FAILED;

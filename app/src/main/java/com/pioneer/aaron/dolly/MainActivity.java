@@ -8,6 +8,7 @@ import android.view.View;
 import com.pioneer.aaron.dolly.fork.DataBaseOperator;
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogActivity;
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
+import com.pioneer.aaron.dolly.fork.calllog.ForkVvmActivity;
 import com.pioneer.aaron.dolly.fork.contacts.ForkContactsActivity;
 
 import java.util.HashMap;
@@ -16,6 +17,7 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
 
     private View mForkCallLogButton;
     private View mForkContactButton;
+    private View mForkVvmButton;
 
     private IMainContract.Presenter mPresenter;
 
@@ -27,9 +29,11 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
 
         mForkCallLogButton = (View) findViewById(R.id.fork_call_log_btn);
         mForkContactButton = (View) findViewById(R.id.fork_contact_btn);
+        mForkVvmButton = (View) findViewById(R.id.fork_vvm_btn);
         mForkCallLogButton.setOnClickListener(mOnClickListener);
         mForkCallLogButton.setOnLongClickListener(mOnLongClickListener);
         mForkContactButton.setOnClickListener(mOnClickListener);
+        mForkVvmButton.setOnClickListener(mOnClickListener);
     }
 
     @Override
@@ -48,6 +52,10 @@ public class MainActivity extends AppCompatActivity implements IMainContract.Vie
             case R.id.fork_contact_btn:
                 Intent forkContactIntent = new Intent(MainActivity.this, ForkContactsActivity.class);
                 startActivity(forkContactIntent);
+                break;
+            case R.id.fork_vvm_btn:
+                Intent forkVvmIntent = new Intent(MainActivity.this, ForkVvmActivity.class);
+                startActivity(forkVvmIntent);
                 break;
             default:
                 break;
