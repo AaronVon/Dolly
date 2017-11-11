@@ -23,6 +23,8 @@ import android.widget.RadioGroup;
 import com.pioneer.aaron.dolly.fork.ForkService;
 import com.pioneer.aaron.dolly.fork.ForkTask;
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
+import com.pioneer.aaron.dolly.utils.ForkConstants;
+import com.pioneer.aaron.dolly.utils.ForkVibrator;
 import com.pioneer.aaron.dolly.utils.Matrix;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
@@ -34,7 +36,6 @@ public class MainPresenter implements IMainContract.Presenter {
     private static final String TAG = "MainPresenter";
 
     private static final int CALLLOG_DEFAULT_QUANTITY = 5;
-    private static final int VIBRATE_ON_LONG_CLICK = 100;
     private ForkService.ForkBinder mForkBinder;
     private Context mContext;
     private MainHanler mHanler;
@@ -42,9 +43,8 @@ public class MainPresenter implements IMainContract.Presenter {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case VIBRATE_ON_LONG_CLICK:
-                    Vibrator vibrator = (Vibrator) mContext.getSystemService(Context.VIBRATOR_SERVICE);
-                    vibrator.vibrate(70);
+                case ForkConstants.VIBRATE_ON_LONG_CLICK:
+                    ForkVibrator.getInstance(mContext).vibrate(70);
                     break;
                 default:
                     break;
@@ -167,7 +167,7 @@ public class MainPresenter implements IMainContract.Presenter {
 
     @Override
     public void vibrate() {
-        mHanler.sendEmptyMessage(VIBRATE_ON_LONG_CLICK);
+        mHanler.sendEmptyMessage(ForkConstants.VIBRATE_ON_LONG_CLICK);
     }
 
     private void startForkRandomRCS(int quantity) {

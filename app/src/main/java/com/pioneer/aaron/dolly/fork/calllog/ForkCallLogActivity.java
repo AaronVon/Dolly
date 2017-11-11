@@ -83,7 +83,7 @@ public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forkcalllog);
 
-        mPresenter = new ForkCallLogPresenter(this);
+        mPresenter = new ForkCallLogPresenter(this,this);
         mPresenter.loadResInBackground(this);
         if (mPresenter.checkPermissions(this)) {
             initUI();
@@ -278,5 +278,10 @@ public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallL
     protected void onDestroy() {
         mPresenter.onDestroy(this);
         super.onDestroy();
+    }
+
+    @Override
+    public void toast(String msg) {
+
     }
 }

@@ -13,8 +13,8 @@ import java.util.HashMap;
 
 public interface IForkCallLogContract {
 
-    interface View extends IBaseView{
-
+    interface View extends IBaseView {
+        void toast(String msg);
     }
 
     interface Presenter extends IBasePresenter {
@@ -25,6 +25,10 @@ public interface IForkCallLogContract {
         void forkSpecifiedCallLog(Context context, ForkCallLogData data);
 
         void forkVvmCallLog(Context context, String phoneNumber);
+
+        void sendVvmState(String state);
+
+        void vibrate();
     }
 
 }

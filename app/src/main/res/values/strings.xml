@@ -47,4 +47,14 @@
     <string name="shortcut_fork_contact">@string/fork_contact_btn</string>
     <string name="shortcut_fork_call_log">@string/fork_calllog_btn</string>
     <string name="shortcut_disabled">Shortcut Disabled</string>
+
+    <string name="advanced_vvm_send_state">Send State</string>
+    <string-array name="vvm_config_states">
+        <item>OK</item>
+        <item>NOT_CONFIGURED</item>
+        <item>CAN_BE_CONFIGURED</item>
+        <item>CONFIGURING</item>
+        <item>FAILED</item>
+        <item>DISABLED</item>
+    </string-array>
 </resources>
