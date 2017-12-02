@@ -10,6 +10,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import com.pioneer.aaron.dolly.R;
+import com.pioneer.aaron.dolly.utils.ExpandCollapseAnimation;
 
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
 
@@ -26,6 +27,7 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
     private Button mStartForkButton;
     private ViewStub mAdvancedViewStub;
     private View mAdvancedView;
+    private boolean mAdvancedOptViewOpened = false;
     private Button mStateButton;
     private Spinner mStateSpinner;
 
@@ -76,6 +78,7 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
                 case R.id.start_fork_calllog_btn:
                     mPresenter.vibrate();
                     loadAdvancedView();
+                    animateAdancedOptView(!mAdvancedOptViewOpened);
                     break;
                 default:
                     break;
@@ -95,6 +98,21 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
         mStateButton = (Button) mAdvancedView.findViewById(R.id.state_btn);
         mStateButton.setOnClickListener(mOnClickListener);
         mStateSpinner = (Spinner) mAdvancedView.findViewById(R.id.states_spinner);
+    }
+
+    /**
+     * @param open TRUE to open, while FALSE to close.
+     */
+    private void animateAdancedOptView(boolean open) {
+        if (mAdvancedView != null) {
+            mAdvancedOptViewOpened = !mAdvancedOptViewOpened;
+            ExpandCollapseAnimation animation = new ExpandCollapseAnimation(mAdvancedView,
+                    open ? ExpandCollapseAnimation.EXPANEDED : ExpandCollapseAnimation.COLLAPSED);
+            animation.setDuration(200);
+            mAdvancedView.startAnimation(animation);
+        } else {
+            Log.d(TAG, "Failed to animate advanced opt view due to null object.");
+        }
     }
 
     @Override

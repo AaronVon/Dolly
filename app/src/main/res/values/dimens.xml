@@ -11,4 +11,5 @@
     <dimen name="vvm_width">26.7dp</dimen>
     <dimen name="vvm_height">12dp</dimen>
     <dimen name="divider_view_height">1dp</dimen>
+    <dimen name="expand_collapse_height">48dp</dimen>
 </resources>
