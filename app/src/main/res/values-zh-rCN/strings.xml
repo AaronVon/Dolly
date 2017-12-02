@@ -2,8 +2,10 @@
     <string name="app_name">Forks</string>
     <string name="fork_calllog_btn">生成通话记录</string>
     <string name="fork_contact_btn">生成联系人</string>
+    <string name="fork_vvm_btn">生成语音留言</string>
     <string name="calllog_number_hint">输入号码</string>
     <string name="calllog_quantity_hint">要生成的通话记录数量</string>
+    <string name="contacts_quantity_hint">要生成的联系人数量</string>
 
     <!-- call log radio buttons -->
     <string name="call_log_outgoing">呼出</string>
