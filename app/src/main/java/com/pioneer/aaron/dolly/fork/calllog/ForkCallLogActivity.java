@@ -156,14 +156,14 @@ public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallL
     };
 
     private void startForkCallLogs() {
+        String quantity = mCallLogQuantityEditText.getText().toString();
+        if (TextUtils.isEmpty(quantity) || Integer.valueOf(quantity) <= 0) {
+            Snackbar.make(findViewById(R.id.activity_fork_call_log_layout),
+                    R.string.call_log_quantity_msg, Snackbar.LENGTH_SHORT).show();
+            return;
+        }
         if (!mRollDiceCheckBox.isChecked()) {
-            String quantity = mCallLogQuantityEditText.getText().toString();
-            if (TextUtils.isEmpty(quantity) || Integer.valueOf(quantity) <= 0) {
-                Snackbar.make(findViewById(R.id.activity_fork_call_log_layout), R.string.call_log_quantity_msg, Snackbar.LENGTH_SHORT)
-                        .show();
-            } else {
-                mPresenter.forkSpecifiedCallLog(getApplicationContext(), getKeyValuesToFork());
-            }
+            mPresenter.forkSpecifiedCallLog(getApplicationContext(), getKeyValuesToFork());
         } else {
             mPresenter.forkRandomCallLogs(getApplicationContext(), Integer.parseInt(mCallLogQuantityEditText.getText().toString()));
         }
