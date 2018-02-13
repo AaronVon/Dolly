@@ -58,4 +58,22 @@
         <item>FAILED</item>
         <item>DISABLED</item>
     </string-array>
+
+    <string name="advanced_vvm_send_data">Send Data</string>
+    <string-array name="vvm_data_state">
+        <item>OK</item>
+        <item>NO_CONNECTION</item>
+        <item>NO_CONNECTION_CELLULAR_REQUIRED</item>
+        <item>BAD_CONFIGURATION</item>
+        <item>COMMUNICATION_ERROR</item>
+        <item>SERVER_ERROR </item>
+        <item>SERVER_CONNECTION_ERROR</item>
+    </string-array>
+
+    <string name="advanced_vvm_send_notification">Send Notification</string>
+    <string-array name="vvm_notification">
+        <item>OK</item>
+        <item>NO_CONNECTION</item>
+        <item>MESSAGE_WAITING</item>
+    </string-array>
 </resources>

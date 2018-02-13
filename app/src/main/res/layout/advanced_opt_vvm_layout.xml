@@ -12,16 +12,54 @@
         android:orientation="horizontal">
 
         <Button
-            android:id="@+id/state_btn"
+            android:id="@+id/config_btn"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/advanced_vvm_send_state"/>
 
         <Spinner
             android:id="@+id/states_spinner"
-            android:layout_width="120dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:entries="@array/vvm_config_states"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/data_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/advanced_vvm_send_data"/>
+
+        <Spinner
+            android:id="@+id/data_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/vvm_data_state"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/notification_btn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/advanced_vvm_send_notification"/>
+
+        <Spinner
+            android:id="@+id/notification_spinner"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:entries="@array/vvm_notification"/>
 
     </LinearLayout>
 

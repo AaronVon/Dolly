@@ -26,7 +26,7 @@ public interface IForkCallLogContract {
 
         void forkVvmCallLog(Context context, String phoneNumber);
 
-        void sendVvmState(String state);
+        void sendVvmState(String vvmState, String state);
 
         void vibrate();
     }

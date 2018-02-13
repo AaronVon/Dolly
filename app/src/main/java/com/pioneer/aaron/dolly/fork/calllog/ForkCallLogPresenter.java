@@ -98,18 +98,39 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
     }
 
     @Override
-    public void sendVvmState(String state) {
-        new ConfigStateAsyncTask().execute(state);
+    public void sendVvmState(String vvmState, String state) {
+        new ConfigStateAsyncTask().execute(vvmState, state);
     }
 
     private class ConfigStateAsyncTask extends AsyncTask<String, Void, Void> {
         private int mConfigState = ForkConstants.INVALID_CONFIG_STATE;
         private String state;
+        private String vvmStateClassification;
 
         @Override
         protected Void doInBackground(String... params) {
-            String[] configs = mContext.getResources().getStringArray(R.array.vvm_config_states);
-            state = params[0];
+            // param[0] is VVM_STATE;
+            // param[1] is state value;
+            String[] configs = null;
+            vvmStateClassification = params[0];
+            switch (params[0]) {
+                case VVM_STATE.CONFIGURATION:
+                    configs = mContext.getResources().getStringArray(R.array.vvm_config_states);
+                    break;
+                case VVM_STATE.DATA:
+                    configs = mContext.getResources().getStringArray(R.array.vvm_data_state);
+                    break;
+                case VVM_STATE.NOTIFICATION:
+                    configs = mContext.getResources().getStringArray(R.array.vvm_notification);
+                    break;
+                default:
+                    break;
+            }
+            if (configs == null) {
+                Log.i(TAG, "configs is NULL");
+                return null;
+            }
+            state = params[1];
             for (int i = 0; i < configs.length; ++i) {
                 if (configs[i].equals(state)) {
                     mConfigState = i;
@@ -120,10 +141,14 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
             Uri configUri = VoicemailContract.Status.buildSourceUri(mContext.getPackageName());
 
             ContentValues contentValues = new ContentValues();
-            contentValues.put(VoicemailContract.Status.CONFIGURATION_STATE, mConfigState);
-            contentValues.put(VoicemailContract.Status.NOTIFICATION_CHANNEL_STATE, VoicemailContract.Status.NOTIFICATION_CHANNEL_STATE_NO_CONNECTION);
+            if (params[0].equals(VVM_STATE.CONFIGURATION)) {
+                contentValues.put(VoicemailContract.Status.CONFIGURATION_STATE, mConfigState);
+            } else if (params[0].equals(VVM_STATE.DATA)) {
+                contentValues.put(VoicemailContract.Status.DATA_CHANNEL_STATE, mConfigState);
+            } else if (params[0].equals(VVM_STATE.NOTIFICATION)) {
+                contentValues.put(VoicemailContract.Status.NOTIFICATION_CHANNEL_STATE, mConfigState);
+            }
             contentValues.put(VoicemailContract.Status.VOICEMAIL_ACCESS_URI, "tel:888");
-            contentValues.put(VoicemailContract.Status.DATA_CHANNEL_STATE, VoicemailContract.Status.DATA_CHANNEL_STATE_NO_CONNECTION);
             contentValues.put(VoicemailContract.Status.SETTINGS_URI, Uri.decode("http://www.default.config.com"));
             contentValues.put(VoicemailContract.Status.SOURCE_PACKAGE, mContext.getPackageName());
 
@@ -135,8 +160,8 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             if (mConfigState != ForkConstants.INVALID_CONFIG_STATE) {
-                Log.i(TAG, "state " + mConfigState + " was send.");
-                mView.toast("State " + state + " was send.");
+                Log.i(TAG, vvmStateClassification + " " + mConfigState + " was sent.");
+                mView.toast(vvmStateClassification + " " + state + " was sent.");
             }
         }
     }
@@ -171,5 +196,11 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
         } catch (IllegalStateException ise) {
             Log.e(TAG, "onDestroy: unbindService IllegalStateException");
         }
+    }
+
+    public interface VVM_STATE {
+        String CONFIGURATION = "CONFIGURATION";
+        String NOTIFICATION = "NOTIFICATION";
+        String DATA = "DATA";
     }
 }

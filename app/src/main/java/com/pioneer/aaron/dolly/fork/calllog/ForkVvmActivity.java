@@ -28,8 +28,12 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
     private ViewStub mAdvancedViewStub;
     private View mAdvancedView;
     private boolean mAdvancedOptViewOpened = false;
-    private Button mStateButton;
-    private Spinner mStateSpinner;
+    private Button mConfigButton;
+    private Spinner mConfigSpinner;
+    private Button mDataButton;
+    private Spinner mDataSpinner;
+    private Button mNotificationButton;
+    private Spinner mNotificationSpinner;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +66,14 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
                 case R.id.start_fork_calllog_btn:
                     mPresenter.forkVvmCallLog(ForkVvmActivity.this, mPhoneNumberEditText.getText().toString());
                     break;
-                case R.id.state_btn:
-                    mPresenter.sendVvmState(mStateSpinner.getSelectedItem().toString());
+                case R.id.config_btn:
+                    mPresenter.sendVvmState(ForkCallLogPresenter.VVM_STATE.CONFIGURATION, mConfigSpinner.getSelectedItem().toString());
+                    break;
+                case R.id.data_btn:
+                    mPresenter.sendVvmState(ForkCallLogPresenter.VVM_STATE.DATA, mDataSpinner.getSelectedItem().toString());
+                    break;
+                case R.id.notification_btn:
+                    mPresenter.sendVvmState(ForkCallLogPresenter.VVM_STATE.NOTIFICATION, mNotificationSpinner.getSelectedItem().toString());
                     break;
                 default:
                     break;
@@ -95,9 +105,20 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
 
         mAdvancedView = mAdvancedViewStub.inflate();
         mAdvancedViewStub = null;
-        mStateButton = (Button) mAdvancedView.findViewById(R.id.state_btn);
-        mStateButton.setOnClickListener(mOnClickListener);
-        mStateSpinner = (Spinner) mAdvancedView.findViewById(R.id.states_spinner);
+        // configuration state
+        mConfigButton = (Button) mAdvancedView.findViewById(R.id.config_btn);
+        mConfigButton.setOnClickListener(mOnClickListener);
+        mConfigSpinner = (Spinner) mAdvancedView.findViewById(R.id.states_spinner);
+
+        // data state
+        mDataButton = (Button) findViewById(R.id.data_btn);
+        mDataButton.setOnClickListener(mOnClickListener);
+        mDataSpinner = (Spinner) findViewById(R.id.data_spinner);
+
+        // notification state
+        mNotificationButton = (Button) findViewById(R.id.notification_btn);
+        mNotificationButton.setOnClickListener(mOnClickListener);
+        mNotificationSpinner = (Spinner) findViewById(R.id.notification_spinner);
     }
 
     /**
