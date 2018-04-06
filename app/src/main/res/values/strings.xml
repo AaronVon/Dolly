@@ -76,4 +76,7 @@
         <item>NO_CONNECTION</item>
         <item>MESSAGE_WAITING</item>
     </string-array>
+
+    <string name="sub_id_one">SUB 1</string>
+    <string name="sub_id_two">SUB 2</string>
 </resources>

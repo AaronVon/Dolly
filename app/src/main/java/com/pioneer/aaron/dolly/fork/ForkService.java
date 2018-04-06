@@ -71,9 +71,10 @@ public class ForkService extends Service {
 
     public class ForkBinder extends Binder {
 
-        public void startFork(int fork_type, String phoneNumber) {
+        public void startFork(int fork_type, String phoneNumber, int subId) {
             ForkCallLogData data = new ForkCallLogData();
             data.setPhoneNum(phoneNumber);
+            data.setSubId(subId);
             startFork(fork_type, 0, false, data);
         }
 

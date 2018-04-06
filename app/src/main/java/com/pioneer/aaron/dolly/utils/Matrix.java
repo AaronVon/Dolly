@@ -452,4 +452,8 @@ public class Matrix {
         }
         return avatarBytes;
     }
+
+    public static int getRandomSubId() {
+        return getRandomInt(2);
+    }
 }

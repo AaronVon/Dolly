@@ -2,6 +2,7 @@ package com.pioneer.aaron.dolly.fork.calllog;
 
 import android.text.TextUtils;
 
+import com.pioneer.aaron.dolly.utils.ForkConstants;
 import com.pioneer.aaron.dolly.utils.Matrix;
 
 /**
@@ -24,6 +25,7 @@ public class ForkCallLogData {
     private int mFeatures = 0;
     private int mEnryptCall = 0;
     private int mQuantity = 0;
+    private int mSubId = ForkConstants.SIM_ONE;
     private String mSubject;
     private String mPostCallText;
 
@@ -67,6 +69,10 @@ public class ForkCallLogData {
         mQuantity = quantity;
     }
 
+    public void setSubId(int subId) {
+        mSubId = subId;
+    }
+
     public String getPhoneNum() {
         return mPhoneNum;
     }
@@ -89,5 +95,9 @@ public class ForkCallLogData {
 
     public int getQuantity() {
         return mQuantity;
+    }
+
+    public int getSubId() {
+        return mSubId;
     }
 }

@@ -91,9 +91,9 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
     }
 
     @Override
-    public void forkVvmCallLog(Context context, String phoneNumber) {
+    public void forkVvmCallLog(Context context, String phoneNumber, int subId) {
         if (mForkBinder != null) {
-            mForkBinder.startFork(ForkTask.FORK_TYPE_VVM, phoneNumber);
+            mForkBinder.startFork(ForkTask.FORK_TYPE_VVM, phoneNumber, subId);
         }
     }
 

@@ -24,7 +24,7 @@ public interface IForkCallLogContract {
 
         void forkSpecifiedCallLog(Context context, ForkCallLogData data);
 
-        void forkVvmCallLog(Context context, String phoneNumber);
+        void forkVvmCallLog(Context context, String phoneNumber, int subId);
 
         void sendVvmState(String vvmState, String state);
 

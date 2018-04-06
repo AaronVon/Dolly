@@ -19,6 +19,7 @@ import android.widget.RadioGroup;
 
 import com.pioneer.aaron.dolly.R;
 import com.pioneer.aaron.dolly.fork.DataBaseOperator;
+import com.pioneer.aaron.dolly.utils.ForkConstants;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
 import java.util.HashMap;
@@ -50,6 +51,8 @@ public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallL
 
     CheckBox mEncryptedCallCheckBox;
     CheckBox mVideoCallCheckBox;
+    private RadioGroup mSubscriptionRadioGroup;
+    private RadioButton mSubOneRadioButton;
     CheckBox mRollDiceCheckBox;
     EditText mCallLogQuantityEditText;
 
@@ -83,7 +86,7 @@ public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_forkcalllog);
 
-        mPresenter = new ForkCallLogPresenter(this,this);
+        mPresenter = new ForkCallLogPresenter(this, this);
         mPresenter.loadResInBackground(this);
         if (mPresenter.checkPermissions(this)) {
             initUI();
@@ -134,6 +137,9 @@ public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallL
         } else {
             mVideoCallCheckBox.setVisibility(View.GONE);
         }
+
+        mSubscriptionRadioGroup = (RadioGroup) findViewById(R.id.subscription_id_group);
+        mSubOneRadioButton = (RadioButton) findViewById(R.id.sub_one);
 
         mRollDiceCheckBox = (CheckBox) findViewById(R.id.call_log_roll_dice);
         mRollDiceCheckBox.setOnCheckedChangeListener(mCheckedChangeListener);
@@ -234,6 +240,8 @@ public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallL
         }
         data.setFeatures(features);
 
+        data.setSubId(mSubOneRadioButton.isChecked() ? ForkConstants.SIM_ONE : ForkConstants.SIM_TWO);
+
         data.setQuantity(Integer.parseInt(mCallLogQuantityEditText.getText().toString()));
         return data;
     }
@@ -268,6 +276,12 @@ public class ForkCallLogActivity extends SwipeBackActivity implements IForkCallL
         int calllogVolteTypeSize = mCallLogVolteGroup.getChildCount();
         for (int i = 0; i < calllogVolteTypeSize; ++i) {
             mCallLogVolteGroup.getChildAt(i).setEnabled(isEnabled);
+        }
+
+        // subscription
+        int subscriptionSize = mSubscriptionRadioGroup.getChildCount();
+        for (int i = 0; i < subscriptionSize; ++i) {
+            mSubscriptionRadioGroup.getChildAt(i).setEnabled(isEnabled);
         }
 
         mEncryptedCallCheckBox.setEnabled(isEnabled);

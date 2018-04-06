@@ -103,6 +103,8 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(VoicemailContract.Voicemails.NUMBER, phoneNumber);
+        contentValues.put(CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME, mContext.getPackageName());
+        contentValues.put(CallLog.Calls.PHONE_ACCOUNT_ID, callLogData.getSubId());
         contentValues.put(VoicemailContract.Voicemails.DURATION, 21);
         contentValues.put(VoicemailContract.Voicemails.DATE, System.currentTimeMillis());
         contentValues.put(VoicemailContract.Voicemails.IS_READ, 0);
@@ -173,6 +175,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
                 if (columnsExists.get(ForkCallLogData.CALL_TYPE)) {
                     values.put(ForkCallLogData.CALL_TYPE, Matrix.getRandomCallType());
                 }
+                values.put(CallLog.Calls.PHONE_ACCOUNT_ID, Matrix.getRandomSubId());
             }
             operations.add(ContentProviderOperation
                     .newInsert(CallLog.Calls.CONTENT_URI)
@@ -213,6 +216,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         values.put(CallLog.Calls.TYPE, data.getType());
         values.put(CallLog.Calls.NEW, data.getType() == CallLog.Calls.MISSED_TYPE ? 0 : 1);
         values.put(CallLog.Calls.DATE, System.currentTimeMillis());
+        values.put(CallLog.Calls.PHONE_ACCOUNT_ID, data.getSubId());
 
         if (isRCS) {
             values.put(ForkCallLogData.IS_PRIMARY, 1);

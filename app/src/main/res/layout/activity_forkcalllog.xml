@@ -142,6 +142,11 @@
 
         </LinearLayout>
 
+        <include
+            layout="@layout/subscription_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
         <CheckBox
             android:id="@+id/call_log_roll_dice"
             android:layout_width="wrap_content"

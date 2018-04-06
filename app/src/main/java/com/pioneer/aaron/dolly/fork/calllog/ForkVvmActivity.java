@@ -7,10 +7,16 @@ import android.view.View;
 import android.view.ViewStub;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 
 import com.pioneer.aaron.dolly.R;
+import com.pioneer.aaron.dolly.fork.DataBaseOperator;
 import com.pioneer.aaron.dolly.utils.ExpandCollapseAnimation;
+import com.pioneer.aaron.dolly.utils.ForkConstants;
+
+import java.util.HashMap;
 
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity;
 
@@ -22,6 +28,7 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
     private static final String TAG = "ForkVvmActivity";
 
     private IForkCallLogContract.Presenter mPresenter;
+    private HashMap<String, Boolean> mColumnsExist;
 
     private EditText mPhoneNumberEditText;
     private Button mStartForkButton;
@@ -34,6 +41,9 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
     private Spinner mDataSpinner;
     private Button mNotificationButton;
     private Spinner mNotificationSpinner;
+    private RadioGroup mSubscriptionRadioGroup;
+    private RadioButton mSubOneRadioButton;
+    private RadioButton mSubTwoRadioButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,12 +61,17 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
         if (isTaskRoot()) {
             setSwipeBackEnable(false);
         }
+        mColumnsExist = mPresenter.getColumnsExist(this);
 
         mPhoneNumberEditText = (EditText) findViewById(R.id.call_log_number_edtxt);
         mStartForkButton = (Button) findViewById(R.id.start_fork_calllog_btn);
         mStartForkButton.setOnClickListener(mOnClickListener);
         mStartForkButton.setOnLongClickListener(mOnLongClickListener);
         mAdvancedViewStub = (ViewStub) findViewById(R.id.advanced_vvm_viewstub);
+        mSubscriptionRadioGroup = (RadioGroup) findViewById(R.id.subscription_id_group);
+        mSubOneRadioButton = (RadioButton) findViewById(R.id.sub_one);
+        mSubOneRadioButton.setChecked(true);
+        mSubTwoRadioButton = (RadioButton) findViewById(R.id.sub_two);
     }
 
     private View.OnClickListener mOnClickListener = new View.OnClickListener() {
@@ -64,7 +79,8 @@ public class ForkVvmActivity extends SwipeBackActivity implements IForkCallLogCo
         public void onClick(View v) {
             switch (v.getId()) {
                 case R.id.start_fork_calllog_btn:
-                    mPresenter.forkVvmCallLog(ForkVvmActivity.this, mPhoneNumberEditText.getText().toString());
+                    mPresenter.forkVvmCallLog(ForkVvmActivity.this, mPhoneNumberEditText.getText().toString(),
+                            mSubOneRadioButton.isChecked() ? ForkConstants.SIM_ONE : ForkConstants.SIM_TWO);
                     break;
                 case R.id.config_btn:
                     mPresenter.sendVvmState(ForkCallLogPresenter.VVM_STATE.CONFIGURATION, mConfigSpinner.getSelectedItem().toString());
