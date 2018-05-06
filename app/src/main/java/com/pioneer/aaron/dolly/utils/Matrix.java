@@ -1,10 +1,10 @@
 package com.pioneer.aaron.dolly.utils;
 
 import android.content.Context;
-import android.content.res.Resources;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.AsyncTask;
 import android.provider.BaseColumns;
 import android.provider.CallLog;
 import android.provider.ContactsContract;
@@ -18,9 +18,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.ByteBuffer;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Locale;
 import java.util.Random;
@@ -455,5 +454,37 @@ public class Matrix {
 
     public static int getRandomSubId() {
         return getRandomInt(2);
+    }
+
+    public static class LoadResAsyncTask extends AsyncTask<Integer, Void, Void> {
+        public interface RES_TYPE_LOAD {
+            int CONTACT_NUMBRES = 0;
+            int ASSET_RES = 1;
+        }
+        private WeakReference<Context> weakReference;
+
+        public LoadResAsyncTask(Context context) {
+            this.weakReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected Void doInBackground(Integer... type) {
+            Context context = weakReference.get();
+            if (context == null) {
+                Log.i(TAG, "LoadResAsyncTask: Failed to load res due to context is NULL");
+                return null;
+            }
+            switch (type[0]) {
+                case RES_TYPE_LOAD.CONTACT_NUMBRES:
+                    Matrix.preloadContactPhoneNums(context);
+                    break;
+                case RES_TYPE_LOAD.ASSET_RES:
+                    Matrix.loadResources(context, true);
+                    break;
+                default:
+                    break;
+            }
+            return null;
+        }
     }
 }

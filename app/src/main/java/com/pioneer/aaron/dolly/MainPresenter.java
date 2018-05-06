@@ -5,14 +5,11 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
-import android.os.AsyncTask;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.Vibrator;
 import android.provider.CallLog;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -79,20 +76,7 @@ public class MainPresenter implements IMainContract.Presenter {
 
     @Override
     public void loadResInBackground(Context context) {
-        AsyncTask<Void,Void,Void> loadResAsyncTask = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... params) {
-                Matrix.loadResources(mContext, true);
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                Log.d(TAG, "onPostExecute: load res finished in background");
-            }
-        };
-        loadResAsyncTask.execute();
+        new Matrix.LoadResAsyncTask(context).execute(Matrix.LoadResAsyncTask.RES_TYPE_LOAD.ASSET_RES);
     }
 
     @Override
