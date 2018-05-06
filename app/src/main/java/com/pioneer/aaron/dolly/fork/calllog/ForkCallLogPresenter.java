@@ -24,6 +24,7 @@ import com.pioneer.aaron.dolly.utils.ForkVibrator;
 import com.pioneer.aaron.dolly.utils.Matrix;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 /**
@@ -179,15 +180,25 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
     @Override
     public void loadResInBackground(Context context) {
         // load existing contact phone number
-        AsyncTask<Void, Void, Void> asyncTask = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void[] params) {
-                Matrix.preloadContactPhoneNums(context);
-                return null;
-            }
-        };
-        asyncTask.execute();
+        new LoadResAsyncTask(context).execute();
     }
+
+    private static class LoadResAsyncTask extends AsyncTask<Void, Void, Void> {
+        private WeakReference<Context> weakReference;
+
+        LoadResAsyncTask(Context context) {
+            weakReference = new WeakReference<>(context);
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            if (weakReference.get() != null) {
+                Matrix.preloadContactPhoneNums(weakReference.get());
+            }
+            return null;
+        }
+    }
+
 
     @Override
     public void onDestroy(Context context) {
