@@ -24,6 +24,7 @@ import com.pioneer.aaron.dolly.utils.ForkVibrator;
 import com.pioneer.aaron.dolly.utils.Matrix;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
 /**
@@ -55,15 +56,25 @@ public class ForkCallLogPresenter implements IForkCallLogContract.Presenter {
         mContext = context;
         context.startService(intent);
         context.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        mHandler = new MyHandler();
+        mHandler = new MyHandler(mContext);
     }
 
-    private class MyHandler extends Handler {
+    private static class MyHandler extends Handler {
+        private WeakReference<Context> weakReference;
+
+        MyHandler(Context context) {
+            weakReference = new WeakReference<>(context);
+        }
         @Override
         public void handleMessage(Message msg) {
+            Context context = weakReference.get();
+            if (context == null) {
+                Log.i(TAG, "MyHandler failed to handleMessage due to context is NULL");
+                return;
+            }
             switch (msg.what) {
                 case ForkConstants.VIBRATE_ON_LONG_CLICK:
-                    ForkVibrator.getInstance(mContext).vibrate(70);
+                    ForkVibrator.getInstance(context).vibrate(70);
                     break;
                 default:
                     break;

@@ -10,6 +10,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.provider.CallLog;
 import android.support.v7.app.AlertDialog;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -25,6 +26,8 @@ import com.pioneer.aaron.dolly.utils.ForkVibrator;
 import com.pioneer.aaron.dolly.utils.Matrix;
 import com.pioneer.aaron.dolly.utils.PermissionChecker;
 
+import java.lang.ref.WeakReference;
+
 /**
  * Created by Aaron on 4/18/17.
  */
@@ -36,12 +39,22 @@ public class MainPresenter implements IMainContract.Presenter {
     private ForkService.ForkBinder mForkBinder;
     private Context mContext;
     private MainHanler mHanler;
-    private class MainHanler extends Handler {
+    private static class MainHanler extends Handler {
+        private WeakReference<Context> weakReference;
+
+        MainHanler(Context context) {
+            weakReference = new WeakReference<>(context);
+        }
         @Override
         public void handleMessage(Message msg) {
+            Context context = weakReference.get();
+            if (context == null) {
+                Log.i(TAG, "MainHanler failed to handle msg due to context is NULL");
+                return;
+            }
             switch (msg.what) {
                 case ForkConstants.VIBRATE_ON_LONG_CLICK:
-                    ForkVibrator.getInstance(mContext).vibrate(70);
+                    ForkVibrator.getInstance(context).vibrate(70);
                     break;
                 default:
                     break;
@@ -66,7 +79,7 @@ public class MainPresenter implements IMainContract.Presenter {
         Intent intent = new Intent(context, ForkService.class);
         context.startService(intent);
         context.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
-        mHanler = new MainHanler();
+        mHanler = new MainHanler(mContext);
     }
 
     @Override
