@@ -8,5 +8,5 @@ public class ForkConstants {
     public static final int VIBRATE_ON_LONG_CLICK = 100;
     public static final int INVALID_CONFIG_STATE = -1;
     public static final int SIM_ONE = 0;
-    public static final int SIM_TWO = 0;
+    public static final int SIM_TWO = 1;
 }
