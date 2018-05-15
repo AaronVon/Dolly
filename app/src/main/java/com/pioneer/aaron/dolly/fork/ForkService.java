@@ -1,15 +1,17 @@
 package com.pioneer.aaron.dolly.fork;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.Binder;
+import android.os.Build;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
-import android.support.v7.app.NotificationCompat;
+import android.support.v4.app.NotificationCompat;
 import android.widget.Toast;
 
 import com.pioneer.aaron.dolly.MainActivity;
@@ -21,6 +23,7 @@ import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData;
  */
 
 public class ForkService extends Service {
+    private static final String TAG = "ForkService";
 
     private ForkTask mForkTask;
     private int total;
@@ -153,9 +156,10 @@ public class ForkService extends Service {
     }
 
     private Notification getNotification(String title, int progress, int realProgress) {
+        initNotificationChannel();
         Intent intent = new Intent(this, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0, intent, 0);
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, TAG);
         builder.setSmallIcon(R.mipmap.fork_icon);
         builder.setLargeIcon(BitmapFactory.decodeResource(getResources(), R.mipmap.fork_icon));
         builder.setContentIntent(pendingIntent);
@@ -165,5 +169,15 @@ public class ForkService extends Service {
             builder.setProgress(100, progress, false);
         }
         return builder.build();
+    }
+
+    private void initNotificationChannel() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+            return;
+        }
+        NotificationManager notificationManager = getNotificationManager();
+        NotificationChannel notificationChannel = new NotificationChannel(TAG, getPackageName(), NotificationManager.IMPORTANCE_DEFAULT);
+        notificationChannel.setDescription(TAG);
+        notificationManager.createNotificationChannel(notificationChannel);
     }
 }
