@@ -86,6 +86,7 @@ public class DataBaseOperator {
             for (String column : columns) {
                 hashMap.put(column, cursor.getColumnIndex(column) != -1);
             }
+            cursor.close();
         }
         mColumnExists = hashMap;
         return hashMap;
