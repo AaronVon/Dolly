@@ -19,6 +19,7 @@ import com.pioneer.aaron.dolly.utils.Matrix;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -44,7 +45,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
     public static final int CONTACT_POSSIBLE_NUM_COUNT = 5;
 
     private static final int FORK_BULK_SIZE = 10;
-    private Context mContext;
+    private WeakReference<Context> mWeakReference;
     private Uri mBaseUri;
     private ContentResolver mContentResolver;
     private IForkListener mForkListener;
@@ -53,7 +54,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
 
     public ForkTask(IForkListener forkListener, Context context) {
         this.mForkListener = forkListener;
-        this.mContext = context;
+        mWeakReference = new WeakReference<>(context);
         mLastProgress = -1;
         mForkCanceled = false;
         mBaseUri = VoicemailContract.Voicemails.buildSourceUri(context.getPackageName());
@@ -62,31 +63,36 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
 
     @Override
     protected Integer doInBackground(Object... params) {
+        Context context = mWeakReference.get();
         int result = TYPE_FAILED;
+        if (context == null) {
+            Log.i(TAG, "ForkTask.doInBackground failed due to context is NULL");
+            return result;
+        }
         if (params[0] instanceof Integer) {
             int type = (int) params[0];
-            Matrix.loadResources(mContext, false);
+            Matrix.loadResources(context, false);
             switch (type) {
                 case FORK_TYPE_RANDOM_CALLLOGS:
-                    result = forkRandomCallLogs((int) params[1], false);
+                    result = forkRandomCallLogs(context, (int) params[1], false);
                     break;
                 case FORK_TYPE_SPECIFIED_CALLLOGS:
-                    result = forkSpecifiedCallLog((ForkCallLogData) params[2], false);
+                    result = forkSpecifiedCallLog(context, (ForkCallLogData) params[2], false);
                     break;
                 case FORK_TYPE_RANDOM_CONTACT:
-                    result = forkContacts((int) params[1], false, (Boolean) params[2]);
+                    result = forkContacts(context, (int) params[1], false, (Boolean) params[2]);
                     break;
                 case FORK_TYPE_ALL_TYPE_CONTACT:
-                    result = forkContacts((int) params[1], true, (Boolean) params[2]);
+                    result = forkContacts(context, (int) params[1], true, (Boolean) params[2]);
                     break;
                 case FORK_TYPE_RANDOM_RCS_CALLLOGS:
-                    result = forkRandomCallLogs((int) params[1], true);
+                    result = forkRandomCallLogs(context, (int) params[1], true);
                     break;
                 case FORK_TYPE_SPECIFIED_RCS_CALLLOGS:
-                    result = forkSpecifiedCallLog((ForkCallLogData) params[2], true);
+                    result = forkSpecifiedCallLog(context, (ForkCallLogData) params[2], true);
                     break;
                 case FORK_TYPE_VVM:
-                    result = forkVvmCallLog((ForkCallLogData) params[1]);
+                    result = forkVvmCallLog((ForkCallLogData) params[1], context);
                     break;
                 default:
                     result = TYPE_FAILED;
@@ -98,12 +104,12 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         return result;
     }
 
-    private int forkVvmCallLog(ForkCallLogData callLogData) {
+    private int forkVvmCallLog(ForkCallLogData callLogData, Context context) {
         String phoneNumber = callLogData.getPhoneNum();
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(VoicemailContract.Voicemails.NUMBER, phoneNumber);
-        contentValues.put(CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME, mContext.getPackageName());
+        contentValues.put(CallLog.Calls.PHONE_ACCOUNT_COMPONENT_NAME, context.getPackageName());
         contentValues.put(CallLog.Calls.PHONE_ACCOUNT_ID, callLogData.getSubId());
         contentValues.put(VoicemailContract.Voicemails.DURATION, 21);
         contentValues.put(VoicemailContract.Voicemails.DATE, System.currentTimeMillis());
@@ -116,14 +122,14 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             return TYPE_FAILED;
         }
 
-        setVoicemailContent(newVoicemailUri);
+        setVoicemailContent(newVoicemailUri, context);
 
         return TYPE_COMPLETED;
     }
 
-    private void setVoicemailContent(Uri voicemailUri) {
+    private void setVoicemailContent(Uri voicemailUri, Context context) {
         try (OutputStream outputStream = mContentResolver.openOutputStream(voicemailUri)) {
-            InputStream inputStream = mContext.getResources().getAssets().open("voicemail_demo.m4a");
+            InputStream inputStream = context.getResources().getAssets().open("voicemail_demo.m4a");
             copyStreamData(inputStream, outputStream);
         } catch (IOException e) {
             e.printStackTrace();
@@ -146,11 +152,11 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         }
     }
 
-    private int forkRandomCallLogs(int quantity, boolean isRCS) {
-        if (mContext == null || quantity <= 0) {
+    private int forkRandomCallLogs(Context context, int quantity, boolean isRCS) {
+        if (quantity <= 0) {
             return TYPE_FAILED;
         }
-        HashMap<String, Boolean> columnsExists = DataBaseOperator.getInstance(mContext).getColumnsExists();
+        HashMap<String, Boolean> columnsExists = DataBaseOperator.getInstance(context).getColumnsExists();
 
         ArrayList<ContentProviderOperation> operations = new ArrayList<>();
         int bulkSize = 0;
@@ -158,22 +164,22 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             ContentValues values = new ContentValues();
             int call_log_type = Matrix.getRandomType();
             values.put(CallLog.Calls.NEW, call_log_type == CallLog.Calls.MISSED_TYPE ? 1 : 0);
-            values.put(CallLog.Calls.NUMBER, Matrix.getRandomPhoneNumWithExistingContact(mContext));
+            values.put(CallLog.Calls.NUMBER, Matrix.getRandomPhoneNumWithExistingContact(context));
             values.put(CallLog.Calls.TYPE, call_log_type);
             values.put(CallLog.Calls.DATE, System.currentTimeMillis());
             if (isRCS) {
-                values.put(ForkCallLogData.IS_PRIMARY, 1);
-                values.put(ForkCallLogData.SUBJECT, Matrix.getRandomSubject());
-                values.put(ForkCallLogData.POST_CALL_TEXT, Matrix.getRandomPostCallText());
+                values.put(ForkCallLogData.Companion.getIS_PRIMARY(), 1);
+                values.put(ForkCallLogData.Companion.getSUBJECT(), Matrix.getRandomSubject());
+                values.put(ForkCallLogData.Companion.getPOST_CALL_TEXT(), Matrix.getRandomPostCallText());
             } else {
-                if (columnsExists.get(ForkCallLogData.ENCRYPT_CALL)) {
-                    values.put(ForkCallLogData.ENCRYPT_CALL, Matrix.getRandomEncryptCall());
+                if (columnsExists.get(ForkCallLogData.Companion.getENCRYPT_CALL())) {
+                    values.put(ForkCallLogData.Companion.getENCRYPT_CALL(), Matrix.getRandomEncryptCall());
                 }
-                if (columnsExists.get(ForkCallLogData.FEATURES)) {
-                    values.put(ForkCallLogData.FEATURES, Matrix.getRandomFeatures());
+                if (columnsExists.get(ForkCallLogData.Companion.getFEATURES())) {
+                    values.put(ForkCallLogData.Companion.getFEATURES(), Matrix.getRandomFeatures());
                 }
-                if (columnsExists.get(ForkCallLogData.CALL_TYPE)) {
-                    values.put(ForkCallLogData.CALL_TYPE, Matrix.getRandomCallType());
+                if (columnsExists.get(ForkCallLogData.Companion.getCALL_TYPE())) {
+                    values.put(ForkCallLogData.Companion.getCALL_TYPE(), Matrix.getRandomCallType());
                 }
                 values.put(CallLog.Calls.PHONE_ACCOUNT_ID, Matrix.getRandomSubId());
             }
@@ -188,7 +194,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             }
             if (bulkSize >= FORK_BULK_SIZE || i >= quantity - 1) {
                 try {
-                    mContext.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
+                    context.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 } catch (OperationApplicationException e) {
@@ -205,11 +211,11 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
 
     private int total = 0;
 
-    private int forkSpecifiedCallLog(ForkCallLogData data, boolean isRCS) {
-        if (mContext == null || data == null) {
+    private int forkSpecifiedCallLog(Context context, ForkCallLogData data, boolean isRCS) {
+        if (context == null || data == null) {
             return TYPE_FAILED;
         }
-        HashMap<String, Boolean> columnsExists = DataBaseOperator.getInstance(mContext).getColumnsExists();
+        HashMap<String, Boolean> columnsExists = DataBaseOperator.getInstance(context).getColumnsExists();
 
         ContentValues values = new ContentValues();
         values.put(CallLog.Calls.NUMBER, data.getPhoneNum());
@@ -219,18 +225,18 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         values.put(CallLog.Calls.PHONE_ACCOUNT_ID, data.getSubId());
 
         if (isRCS) {
-            values.put(ForkCallLogData.IS_PRIMARY, 1);
-            values.put(ForkCallLogData.SUBJECT, data.getSubject());
-            values.put(ForkCallLogData.POST_CALL_TEXT, data.getPostCallText());
+            values.put(ForkCallLogData.Companion.getIS_PRIMARY(), 1);
+            values.put(ForkCallLogData.Companion.getSUBJECT(), data.getSubject());
+            values.put(ForkCallLogData.Companion.getPOST_CALL_TEXT(), data.getPostCallText());
         } else {
-            if (columnsExists.get(ForkCallLogData.CALL_TYPE)) {
-                values.put(ForkCallLogData.CALL_TYPE, data.getCallType());
+            if (columnsExists.get(ForkCallLogData.Companion.getCALL_TYPE())) {
+                values.put(ForkCallLogData.Companion.getCALL_TYPE(), data.getCallType());
             }
-            if (columnsExists.get(ForkCallLogData.ENCRYPT_CALL)) {
-                values.put(ForkCallLogData.ENCRYPT_CALL, data.getEnryptCall());
+            if (columnsExists.get(ForkCallLogData.Companion.getENCRYPT_CALL())) {
+                values.put(ForkCallLogData.Companion.getENCRYPT_CALL(), data.getEnryptCall());
             }
-            if (columnsExists.get(ForkCallLogData.FEATURES)) {
-                values.put(ForkCallLogData.FEATURES, data.getFeatures());
+            if (columnsExists.get(ForkCallLogData.Companion.getFEATURES())) {
+                values.put(ForkCallLogData.Companion.getFEATURES(), data.getFeatures());
             }
         }
 
@@ -251,7 +257,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             }
             if (bulkSize >= FORK_BULK_SIZE || i >= quantity - 1) {
                 try {
-                    mContext.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
+                    context.getContentResolver().applyBatch(CallLog.AUTHORITY, operations);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 } catch (OperationApplicationException e) {
@@ -266,8 +272,8 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
         return TYPE_COMPLETED;
     }
 
-    private int forkContacts(int quantity, boolean allType, boolean avatarIncluded) {
-        if (mContext == null || quantity <= 0) {
+    private int forkContacts(Context context, int quantity, boolean allType, boolean avatarIncluded) {
+        if (context == null || quantity <= 0) {
             return TYPE_FAILED;
         }
 
@@ -381,7 +387,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
 
             /* Avatar */
             if (avatarIncluded) {
-                byte[] avatarBytes = Matrix.getRandomAvatar(mContext);
+                byte[] avatarBytes = Matrix.getRandomAvatar(context);
                 if (avatarBytes != null) {
                     operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                             .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
@@ -400,7 +406,7 @@ public class ForkTask extends AsyncTask<Object, Integer, Integer> {
             }
             if (bulkSize >= FORK_BULK_SIZE || i >= quantity - 1) {
                 try {
-                    mContext.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operations);
+                    context.getContentResolver().applyBatch(ContactsContract.AUTHORITY, operations);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 } catch (OperationApplicationException e) {
