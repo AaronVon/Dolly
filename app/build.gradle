@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'kotlin-android'
 
 android {
     compileSdkVersion 26
@@ -37,4 +38,8 @@ dependencies {
     implementation 'com.android.support:design:26.1.0'
     implementation 'me.yokeyword:fragmentation:1.1.6'
     implementation 'me.yokeyword:fragmentation-swipeback:1.1.6'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+repositories {
+    mavenCentral()
 }
