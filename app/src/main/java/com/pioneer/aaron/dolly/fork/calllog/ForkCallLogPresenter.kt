@@ -79,23 +79,25 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
     }
 
     override fun sendVvmState(vvmState: String, state: String) {
-        ConfigStateAsyncTask().execute(vvmState, state)
+        ConfigStateAsyncTask(this).execute(vvmState, state)
     }
 
-    private inner class ConfigStateAsyncTask : AsyncTask<String, Void, Void>() {
+    class ConfigStateAsyncTask(presenter:ForkCallLogPresenter) : AsyncTask<String, Void, Void>() {
+        private val weakReference: WeakReference<ForkCallLogPresenter> = WeakReference(presenter)
         private var mConfigState = ForkConstants.INVALID_CONFIG_STATE
         private var state: String? = null
         private var vvmStateClassification: String? = null
 
         override fun doInBackground(vararg params: String): Void? {
+            val context = weakReference.get()?.mContext ?: return null
             // param[0] is VVM_STATE;
             // param[1] is state value;
             var configs: Array<String>? = null
             vvmStateClassification = params[0]
             when (params[0]) {
-                VVM_STATE.CONFIGURATION -> configs = mContext.resources.getStringArray(R.array.vvm_config_states)
-                VVM_STATE.DATA -> configs = mContext.resources.getStringArray(R.array.vvm_data_state)
-                VVM_STATE.NOTIFICATION -> configs = mContext.resources.getStringArray(R.array.vvm_notification)
+                VVM_STATE.CONFIGURATION -> configs = context.resources.getStringArray(R.array.vvm_config_states)
+                VVM_STATE.DATA -> configs = context.resources.getStringArray(R.array.vvm_data_state)
+                VVM_STATE.NOTIFICATION -> configs = context.resources.getStringArray(R.array.vvm_notification)
                 else -> {
                 }
             }
@@ -110,8 +112,8 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
                     break
                 }
             }
-            val contentResolver = mContext.contentResolver
-            val configUri = VoicemailContract.Status.buildSourceUri(mContext.packageName)
+            val contentResolver = context.contentResolver
+            val configUri = VoicemailContract.Status.buildSourceUri(context.packageName)
 
             val contentValues = ContentValues()
             if (params[0] == VVM_STATE.CONFIGURATION) {
@@ -123,7 +125,7 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
             }
             contentValues.put(VoicemailContract.Status.VOICEMAIL_ACCESS_URI, "tel:888")
             contentValues.put(VoicemailContract.Status.SETTINGS_URI, Uri.decode("http://www.default.config.com"))
-            contentValues.put(VoicemailContract.Status.SOURCE_PACKAGE, mContext.packageName)
+            contentValues.put(VoicemailContract.Status.SOURCE_PACKAGE, context.packageName)
 
             contentResolver.insert(configUri, contentValues)
             return null
@@ -133,13 +135,17 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
             super.onPostExecute(aVoid)
             if (mConfigState != ForkConstants.INVALID_CONFIG_STATE) {
                 Log.i(TAG, "$vvmStateClassification $mConfigState was sent.")
-                mView.toast("$vvmStateClassification $state was sent.")
+                weakReference.get()?.toast("$vvmStateClassification $state was sent.")
             }
         }
     }
 
     override fun vibrate() {
         mHandler.sendEmptyMessage(ForkConstants.VIBRATE_ON_LONG_CLICK)
+    }
+
+    override fun toast(msg: String) {
+        mView.toast(msg)
     }
 
     override fun checkPermissions(activity: Activity): Boolean {

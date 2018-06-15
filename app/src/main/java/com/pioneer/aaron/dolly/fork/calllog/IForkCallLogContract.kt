@@ -27,6 +27,8 @@ interface IForkCallLogContract {
         fun sendVvmState(vvmState: String, state: String)
 
         fun vibrate()
+
+        fun toast(msg: String)
     }
 
 }
