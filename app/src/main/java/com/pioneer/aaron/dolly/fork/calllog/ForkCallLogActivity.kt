@@ -60,14 +60,11 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
 
             var type = CallLog.Calls.INCOMING_TYPE
             if (mCallLogTypeGroup.visibility == View.VISIBLE) {
-                if (mOutgoingRadioButton.isChecked) {
-                    type = CallLog.Calls.OUTGOING_TYPE
-                } else if (mRejectedRadioButton.isChecked) {
-                    type = CallLog.Calls.REJECTED_TYPE
-                } else if (mIncomingRadioButton.isChecked) {
-                    type = CallLog.Calls.INCOMING_TYPE
-                } else {
-                    type = CallLog.Calls.MISSED_TYPE
+                type = when {
+                    mOutgoingRadioButton.isChecked -> CallLog.Calls.OUTGOING_TYPE
+                    mRejectedRadioButton.isChecked -> CallLog.Calls.REJECTED_TYPE
+                    mIncomingRadioButton.isChecked -> CallLog.Calls.INCOMING_TYPE
+                    else -> CallLog.Calls.MISSED_TYPE
                 }
             }
             data.type = type

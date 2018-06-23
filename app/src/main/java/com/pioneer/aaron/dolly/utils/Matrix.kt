@@ -101,12 +101,12 @@ object Matrix {
     val randomType: Int
         get() {
             var type = Math.abs(sRandom.nextInt(CALLS_TYPE_SPAN))
-            when (type) {
-                CallLog.Calls.INCOMING_TYPE -> type = CallLog.Calls.INCOMING_TYPE
-                CallLog.Calls.OUTGOING_TYPE -> type = CallLog.Calls.OUTGOING_TYPE
-                CallLog.Calls.MISSED_TYPE -> type = CallLog.Calls.MISSED_TYPE
-                CallLog.Calls.REJECTED_TYPE -> type = CallLog.Calls.REJECTED_TYPE
-                else -> type = CallLog.Calls.OUTGOING_TYPE
+            type = when (type) {
+                CallLog.Calls.INCOMING_TYPE -> CallLog.Calls.INCOMING_TYPE
+                CallLog.Calls.OUTGOING_TYPE -> CallLog.Calls.OUTGOING_TYPE
+                CallLog.Calls.MISSED_TYPE -> CallLog.Calls.MISSED_TYPE
+                CallLog.Calls.REJECTED_TYPE -> CallLog.Calls.REJECTED_TYPE
+                else -> CallLog.Calls.OUTGOING_TYPE
             }
             return type
         }
