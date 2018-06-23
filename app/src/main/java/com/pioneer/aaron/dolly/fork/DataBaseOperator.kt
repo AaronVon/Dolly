@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.database.Cursor
 import android.provider.CallLog
+import java.lang.ref.WeakReference
 import java.util.*
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -12,7 +13,7 @@ import java.util.concurrent.Executors
  * Created by Aaron on 4/27/17.
  */
 
-class DataBaseOperator private constructor(private val mContext: Context) {
+class DataBaseOperator private constructor(mContext: Context) {
     private val mSingleExecutorService: ExecutorService = Executors.newSingleThreadExecutor()
     private var mColumnExists: HashMap<String, Boolean>? = null
 
@@ -25,15 +26,21 @@ class DataBaseOperator private constructor(private val mContext: Context) {
             mColumnExists!!
         }
 
+    private var mWeakRef: WeakReference<Context>
+
     init {
         mSingleExecutorService.execute(mCheckColumnsRunnable)
+        mWeakRef = WeakReference(mContext)
     }
 
     private fun checkColumnsExists(vararg columns: String): HashMap<String, Boolean> {
         mColumnExists = HashMap()
         val hashMap = HashMap<String, Boolean>()
-        var cursor: Cursor? = null
-        val contentResolver = mContext.contentResolver
+        val cursor: Cursor?
+        if (mWeakRef.get() == null) {
+            return hashMap
+        }
+        val contentResolver = mWeakRef.get()!!.contentResolver
         cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, null, null, null, null, null)
 
         if (cursor != null) {
