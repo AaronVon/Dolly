@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android" >
+
+    <item
+        android:drawable="@drawable/call_log"
+        android:width="@dimen/fork_btn_width"
+        android:height="@dimen/fork_btn_height" />
+
+</layer-list >

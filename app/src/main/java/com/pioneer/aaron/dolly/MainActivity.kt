@@ -1,15 +1,18 @@
 package com.pioneer.aaron.dolly
 
 import android.content.Intent
+import android.graphics.Typeface
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import android.view.Gravity
 import android.view.View
-
+import android.widget.ImageView
 import com.pioneer.aaron.dolly.fork.DataBaseOperator
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogActivity
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData
 import com.pioneer.aaron.dolly.fork.calllog.ForkVvmActivity
 import com.pioneer.aaron.dolly.fork.contacts.ForkContactsActivity
+import org.jetbrains.anko.*
 
 class MainActivity : AppCompatActivity(), IMainContract.View {
 
@@ -20,16 +23,16 @@ class MainActivity : AppCompatActivity(), IMainContract.View {
     private lateinit var mPresenter: IMainContract.Presenter
 
     private var mOnClickListener = { it: View ->
-        when (it.id) {
-            R.id.fork_call_log_btn -> {
+        when (it) {
+            mForkCallLogButton -> {
                 val forkCallLogIntent = Intent(this@MainActivity, ForkCallLogActivity::class.java)
                 startActivity(forkCallLogIntent)
             }
-            R.id.fork_contact_btn -> {
+            mForkContactButton -> {
                 val forkContactIntent = Intent(this@MainActivity, ForkContactsActivity::class.java)
                 startActivity(forkContactIntent)
             }
-            R.id.fork_vvm_btn -> {
+            mForkVvmButton -> {
                 val forkVvmIntent = Intent(this@MainActivity, ForkVvmActivity::class.java)
                 startActivity(forkVvmIntent)
             }
@@ -52,16 +55,81 @@ class MainActivity : AppCompatActivity(), IMainContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
-        mPresenter = MainPresenter(this)
+        scrollView {
+            padding = dip(resources.getDimensionPixelOffset(R.dimen.activity_horizontal_margin))
+            verticalLayout {
+                mForkCallLogButton = linearLayout {
+                    isClickable = true
+                    setBackgroundResource(R.drawable.ripple_btn)
+                    gravity = Gravity.CENTER
+                    setPadding(0, dimen(R.dimen.fork_btn_padding),
+                            0, dimen(R.dimen.fork_btn_padding))
 
-        mForkCallLogButton = findViewById(R.id.fork_call_log_btn)
-        mForkContactButton = findViewById(R.id.fork_contact_btn)
-        mForkVvmButton = findViewById(R.id.fork_vvm_btn)
-        mForkCallLogButton.setOnClickListener(mOnClickListener)
-        mForkCallLogButton.setOnLongClickListener(mOnLongClickListener)
-        mForkContactButton.setOnClickListener(mOnClickListener)
-        mForkVvmButton.setOnClickListener(mOnClickListener)
+                    imageView(R.drawable.ic_call_log)
+                    textView(R.string.fork_calllog_btn) {
+                        textColor = getColor(android.R.color.black)
+                        typeface = Typeface.DEFAULT_BOLD
+                    }.lparams {
+                        marginStart = dimen(R.dimen.fork_image_btn)
+                        gravity = Gravity.CENTER
+                    }
+
+                    setOnClickListener(mOnClickListener)
+                    setOnLongClickListener(mOnLongClickListener)
+                }.lparams(width = matchParent) {
+                    topMargin = dimen(R.dimen.fork_btn_margin)
+                }
+
+                mForkContactButton = linearLayout {
+                    isClickable = true
+                    setBackgroundResource(R.drawable.ripple_btn)
+                    gravity = Gravity.CENTER
+                    setPadding(0, dimen(R.dimen.fork_btn_padding),
+                            0, dimen(R.dimen.fork_btn_padding))
+
+                    imageView(R.drawable.ic_contact)
+                    textView(R.string.fork_contact_btn) {
+                        textColor = getColor(android.R.color.black)
+                        typeface = Typeface.DEFAULT_BOLD
+                    }.lparams {
+                        marginStart = dimen(R.dimen.fork_image_btn)
+                        gravity = Gravity.CENTER
+                    }
+
+                    setOnClickListener(mOnClickListener)
+                }.lparams(width = matchParent) {
+                    topMargin = dimen(R.dimen.fork_btn_margin)
+                }
+
+                mForkVvmButton = linearLayout {
+                    isClickable = true
+                    setBackgroundResource(R.drawable.ripple_btn)
+                    gravity = Gravity.CENTER
+                    setPadding(0, dimen(R.dimen.fork_btn_padding),
+                            0, dimen(R.dimen.fork_btn_padding))
+
+                    imageView(R.drawable.voicemail) {
+                        scaleType = ImageView.ScaleType.FIT_CENTER
+                    }.lparams(width = dimen(R.dimen.fork_btn_width),
+                            height = dimen(R.dimen.fork_btn_height))
+                    textView(R.string.fork_vvm_btn) {
+                        textColor = getColor(android.R.color.black)
+                        typeface = Typeface.DEFAULT_BOLD
+                    }.lparams {
+                        marginStart = dimen(R.dimen.fork_image_btn)
+                        gravity = Gravity.CENTER
+                    }
+
+                    setOnClickListener(mOnClickListener)
+                }.lparams(width = matchParent) {
+                    topMargin = dimen(R.dimen.fork_btn_margin)
+                }
+
+
+            }
+        }
+
+        mPresenter = MainPresenter(this)
     }
 
     override fun onResume() {
