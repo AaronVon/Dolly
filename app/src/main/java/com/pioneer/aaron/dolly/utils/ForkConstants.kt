@@ -5,6 +5,8 @@ package com.pioneer.aaron.dolly.utils
  */
 
 object ForkConstants {
+    const val CALLLOG_DEFAULT_QUANTITY = 20
+    const val CONTACT_DEFAULT_QUANTITY = 20
     const val VIBRATE_ON_LONG_CLICK = 100
     const val INVALID_CONFIG_STATE = -1
     const val SIM_ONE = 0

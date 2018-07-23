@@ -12,7 +12,10 @@ import com.pioneer.aaron.dolly.R
 import com.pioneer.aaron.dolly.fork.DataBaseOperator
 import com.pioneer.aaron.dolly.utils.ForkConstants
 import com.pioneer.aaron.dolly.utils.PermissionChecker
+import com.pioneer.aaron.dolly.utils.PreferenceHelper
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 import java.util.*
 
 /**
@@ -134,8 +137,8 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
         setContentView(R.layout.activity_forkcalllog)
 
         mPresenter = ForkCallLogPresenter(this, this)
-        mPresenter!!.loadResInBackground(this)
-        if (mPresenter!!.checkPermissions(this)) {
+        mPresenter.loadResInBackground(this)
+        if (mPresenter.checkPermissions(this)) {
             initUI()
         }
     }
@@ -191,6 +194,13 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
         mRollDiceCheckBox = findViewById<View>(R.id.call_log_roll_dice) as CheckBox
         mRollDiceCheckBox.setOnCheckedChangeListener(mCheckedChangeListener)
         mCallLogQuantityEditText = findViewById<View>(R.id.call_log_quantity_edtxt) as EditText
+        doAsync {
+            val forkCallLogsData = PreferenceHelper.getInstance(application).mForkCallLogsData
+            uiThread {
+                mCallLogQuantityEditText.setText(forkCallLogsData.quantity.toString())
+                mRollDiceCheckBox.isChecked = forkCallLogsData.allRandom
+            }
+        }
     }
 
     override fun onResume() {

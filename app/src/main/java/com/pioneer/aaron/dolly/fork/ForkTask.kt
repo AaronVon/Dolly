@@ -9,7 +9,10 @@ import android.provider.ContactsContract
 import android.provider.VoicemailContract
 import android.util.Log
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData
+import com.pioneer.aaron.dolly.utils.ForkCalllogs
+import com.pioneer.aaron.dolly.utils.ForkContacts
 import com.pioneer.aaron.dolly.utils.Matrix
+import com.pioneer.aaron.dolly.utils.PreferenceHelper
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -42,7 +45,7 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
             return result
         }
         if (params[0] is Int) {
-            val type = params[0] as Int
+            val type = params[0]
             Matrix.loadResources(context, false)
             result = when (type) {
                 FORK_TYPE_RANDOM_CALLLOGS -> forkRandomCallLogs(context, params[1] as Int, false)
@@ -116,7 +119,10 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
         if (quantity <= 0) {
             return TYPE_FAILED
         }
-        val columnsExists = DataBaseOperator.getInstance(context)!!.columnsExists
+        val forkSpData = ForkCalllogs(quantity)
+        forkSpData.allRandom = true
+        PreferenceHelper.getInstance(context).updateForkPreference(context, forkSpData)
+        val columnsExists = DataBaseOperator.getInstance(context).columnsExists
 
         val operations = ArrayList<ContentProviderOperation>()
         var bulkSize = 0
@@ -236,6 +242,10 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
         if (context == null || quantity <= 0) {
             return TYPE_FAILED
         }
+        val forkSpData = ForkContacts(quantity)
+        forkSpData.allTypes = allType
+        forkSpData.genAvatar = avatarIncluded
+        PreferenceHelper.getInstance(context).updateForkPreference(context, forkSpData)
 
         val operations = ArrayList<ContentProviderOperation>()
         var bulkSize = 0

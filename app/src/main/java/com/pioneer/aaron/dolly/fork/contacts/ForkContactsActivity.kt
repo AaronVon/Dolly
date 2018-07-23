@@ -11,8 +11,11 @@ import android.widget.EditText
 
 import com.pioneer.aaron.dolly.R
 import com.pioneer.aaron.dolly.utils.PermissionChecker
+import com.pioneer.aaron.dolly.utils.PreferenceHelper
 
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity
+import org.jetbrains.anko.doAsync
+import org.jetbrains.anko.uiThread
 
 /**
  * Created by Aaron on 4/18/17.
@@ -26,7 +29,7 @@ class ForkContactsActivity : SwipeBackActivity(), IForkContactContract.View {
     private lateinit var mContactsAllTypeCheckBox: CheckBox
     private lateinit var mContactsAvatar: CheckBox
 
-    internal var mOnClickListener: View.OnClickListener = View.OnClickListener { v ->
+    private var mOnClickListener: View.OnClickListener = View.OnClickListener { v ->
         when (v.id) {
             R.id.start_fork_contact_btn -> startFork(mContactsAllTypeCheckBox.isChecked, mContactsAvatar.isChecked)
             else -> {
@@ -49,13 +52,20 @@ class ForkContactsActivity : SwipeBackActivity(), IForkContactContract.View {
             setSwipeBackEnable(false)
         }
         mContactQuantity = findViewById<View>(R.id.contact_quantity_edtxt) as EditText
-        mContactQuantity.setText(CONTACT_DEFAULT_QUANTITY.toString())
 
         mStartForkButton = findViewById<View>(R.id.start_fork_contact_btn) as Button
         mStartForkButton.setOnClickListener(mOnClickListener)
 
         mContactsAllTypeCheckBox = findViewById<View>(R.id.fork_contact_all_type) as CheckBox
         mContactsAvatar = findViewById<View>(R.id.fork_contact_avatar) as CheckBox
+        doAsync {
+            val forkContactsData = PreferenceHelper.getInstance(application).mForkContactsData
+            uiThread {
+                mContactQuantity.setText(forkContactsData.quantity.toString())
+                mContactsAllTypeCheckBox.isChecked = forkContactsData.allTypes
+                mContactsAvatar.isChecked = forkContactsData.genAvatar
+            }
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
@@ -94,9 +104,5 @@ class ForkContactsActivity : SwipeBackActivity(), IForkContactContract.View {
     override fun onDestroy() {
         mPresenter.onDestroy(this)
         super.onDestroy()
-    }
-
-    companion object {
-        private const val CONTACT_DEFAULT_QUANTITY = 20
     }
 }
