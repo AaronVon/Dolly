@@ -4,18 +4,25 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.provider.CallLog
 import android.support.design.widget.Snackbar
+import android.support.design.widget.TextInputEditText
+import android.support.design.widget.TextInputLayout
+import android.text.InputType
 import android.text.TextUtils
 import android.view.MenuItem
 import android.view.View
+import android.view.ViewManager
 import android.widget.*
+import anko.Id
+import anko.immersiveToolbar
+import anko.subscriptionLayout
 import com.pioneer.aaron.dolly.R
 import com.pioneer.aaron.dolly.fork.DataBaseOperator
 import com.pioneer.aaron.dolly.utils.ForkConstants
 import com.pioneer.aaron.dolly.utils.PermissionChecker
 import com.pioneer.aaron.dolly.utils.PreferenceHelper
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity
-import org.jetbrains.anko.doAsync
-import org.jetbrains.anko.uiThread
+import org.jetbrains.anko.*
+import org.jetbrains.anko.custom.ankoView
 import java.util.*
 
 /**
@@ -44,12 +51,13 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
     private lateinit var mSubOneRadioButton: RadioButton
     private lateinit var mRollDiceCheckBox: CheckBox
     private lateinit var mCallLogQuantityEditText: EditText
+    private lateinit var mRootView: View
 
     private lateinit var mColumnsExist: HashMap<String, Boolean>
 
     private var mOnClickListener = { v: View ->
-        when (v.id) {
-            R.id.start_fork_calllog_btn -> startForkCallLogs()
+        when (v) {
+            mStartForkButton -> startForkCallLogs()
             else -> {
             }
         }
@@ -105,8 +113,8 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
         }
 
     private var mCheckedChangeListener = { buttonView: View, _: Boolean ->
-        when (buttonView.id) {
-            R.id.call_log_roll_dice -> updateButtonsStates()
+        when (buttonView) {
+            mRollDiceCheckBox -> updateButtonsStates()
             else -> {
             }
         }
@@ -134,7 +142,8 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_forkcalllog)
+        anko.makeImmersive(window)
+        ForkCallLogActivityUI().setContentView(this)
 
         mPresenter = ForkCallLogPresenter(this, this)
         mPresenter.loadResInBackground(this)
@@ -149,31 +158,13 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
         }
         mColumnsExist = mPresenter.getColumnsExist(applicationContext)
 
-        mPhoneNumberEditText = findViewById<View>(R.id.call_log_number_edtxt) as EditText
-        mStartForkButton = findViewById<View>(R.id.start_fork_calllog_btn) as Button
-        mStartForkButton.setOnClickListener(mOnClickListener)
-
-        mCallLogTypeGroup = findViewById<View>(R.id.call_log_type_radioGroup) as RadioGroup
-        mOutgoingRadioButton = findViewById<View>(R.id.outgoing_radiobtn) as RadioButton
-        mOutgoingRadioButton.isChecked = true
-
-        mRejectedRadioButton = findViewById<View>(R.id.rejected_radiobtn) as RadioButton
-        mIncomingRadioButton = findViewById<View>(R.id.answered_radiobtn) as RadioButton
-        mMissedRadioButton = findViewById<View>(R.id.missed_radiobtn) as RadioButton
-
-        mCallLogVolteGroup = findViewById<View>(R.id.call_log_volte_feature_radiogroup) as RadioGroup
         if (mColumnsExist[DataBaseOperator.CALLLOG_CALL_TYPE]!!) {
             mCallLogVolteGroup.visibility = View.VISIBLE
-            mVolteRadioButton = findViewById<View>(R.id.call_log_volte_radiobtn) as RadioButton
             mVolteRadioButton.isChecked = true
-            mVowifiRadioButton = findViewById<View>(R.id.call_log_vowifi_hd_radiobtn) as RadioButton
-            mHdRadioButton = findViewById<View>(R.id.call_log_volte_hd_radiobtn) as RadioButton
-            mNoneRadioButton = findViewById<View>(R.id.call_log_volte_none_radiobtn) as RadioButton
         } else {
             mCallLogVolteGroup.visibility = View.GONE
         }
 
-        mEncryptedCallCheckBox = findViewById<View>(R.id.encrypted_call_chkbox) as CheckBox
         if (mColumnsExist[DataBaseOperator.CALLLOG_ENCRYPT]!!) {
             mEncryptedCallCheckBox.visibility = View.VISIBLE
             mEncryptedCallCheckBox.isChecked = true
@@ -181,19 +172,14 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
             mEncryptedCallCheckBox.visibility = View.GONE
         }
 
-        mVideoCallCheckBox = findViewById<View>(R.id.video_call_chkbox) as CheckBox
-        if (mColumnsExist[DataBaseOperator.CALLLOG_FEATURE]!!) {
-            mVideoCallCheckBox.visibility = View.VISIBLE
+        mVideoCallCheckBox.visibility = if (mColumnsExist[DataBaseOperator.CALLLOG_FEATURE]!!) {
+            View.VISIBLE
         } else {
-            mVideoCallCheckBox.visibility = View.GONE
+            View.GONE
         }
 
-        mSubscriptionRadioGroup = findViewById<View>(R.id.subscription_id_group) as RadioGroup
-        mSubOneRadioButton = findViewById<View>(R.id.sub_one) as RadioButton
+        mSubOneRadioButton = findViewById<View>(Id.subOneRadioButton) as RadioButton
 
-        mRollDiceCheckBox = findViewById<View>(R.id.call_log_roll_dice) as CheckBox
-        mRollDiceCheckBox.setOnCheckedChangeListener(mCheckedChangeListener)
-        mCallLogQuantityEditText = findViewById<View>(R.id.call_log_quantity_edtxt) as EditText
         doAsync {
             val forkCallLogsData = PreferenceHelper.getInstance(application).mForkCallLogsData
             uiThread {
@@ -203,14 +189,10 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
         }
     }
 
-    override fun onResume() {
-        super.onResume()
-    }
-
     private fun startForkCallLogs() {
         val quantity = mCallLogQuantityEditText.text.toString()
         if (TextUtils.isEmpty(quantity) || Integer.valueOf(quantity) <= 0) {
-            Snackbar.make(findViewById(R.id.activity_fork_call_log_layout),
+            Snackbar.make(mRootView,
                     R.string.call_log_quantity_msg, Snackbar.LENGTH_SHORT).show()
             return
         }
@@ -274,5 +256,130 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
 
     companion object {
         private val TAG = "ForkCallLogActivity"
+    }
+
+    inner class ForkCallLogActivityUI : AnkoComponent<ForkCallLogActivity> {
+        inline fun ViewManager.textInputEditText(theme: Int = 0, init: TextInputEditText.() -> Unit) = ankoView({ TextInputEditText(it) }, theme, init)
+
+        inline fun ViewManager.textInputLayout(theme: Int = 0, init: TextInputLayout.() -> Unit) = ankoView(::TextInputLayout, theme, init)
+
+        override fun createView(ui: AnkoContext<ForkCallLogActivity>): View =
+                with(ui) {
+                    mRootView = verticalLayout {
+                        immersiveToolbar(this@ForkCallLogActivity)
+                        scrollView {
+                            verticalLayout {
+                                padding = dimen(R.dimen.activity_horizontal_margin)
+                                verticalLayout {
+                                    frameLayout {
+                                        textInputLayout {
+                                            mPhoneNumberEditText = textInputEditText {
+                                                hint = resources.getString(R.string.calllog_number_hint)
+                                                inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_VARIATION_NORMAL
+                                            }.lparams(width = matchParent)
+                                        }.lparams(width = matchParent)
+                                    }
+                                    mCallLogTypeGroup = radioGroup {
+                                        orientation = LinearLayout.HORIZONTAL
+                                        mOutgoingRadioButton = radioButton {
+                                            isChecked = true
+                                            ellipsize = TextUtils.TruncateAt.END
+                                            maxLines = 1
+                                            text = resources.getString(R.string.call_log_outgoing)
+                                            allCaps = true
+                                        }.lparams {
+                                            weight = 1f
+                                        }
+                                        mRejectedRadioButton = radioButton {
+                                            ellipsize = TextUtils.TruncateAt.END
+                                            maxLines = 1
+                                            text = resources.getString(R.string.call_log_rejected)
+                                            allCaps = true
+                                        }.lparams {
+                                            weight = 1f
+                                        }
+                                        mIncomingRadioButton = radioButton {
+                                            ellipsize = TextUtils.TruncateAt.END
+                                            maxLines = 1
+                                            text = resources.getString(R.string.call_log_incoming)
+                                            allCaps = true
+                                        }.lparams {
+                                            weight = 1f
+                                        }
+                                        mMissedRadioButton = radioButton {
+                                            ellipsize = TextUtils.TruncateAt.END
+                                            maxLines = 1
+                                            text = resources.getString(R.string.call_log_missed)
+                                            allCaps = true
+                                        }.lparams {
+                                            weight = 1f
+                                        }
+                                    }.lparams(width = matchParent)
+                                    mCallLogVolteGroup = radioGroup {
+                                        isBaselineAligned = false
+                                        orientation = LinearLayout.HORIZONTAL
+                                        visibility = View.GONE
+                                        mVolteRadioButton = radioButton {
+                                            ellipsize = TextUtils.TruncateAt.END
+                                            maxLines = 1
+                                            text = resources.getString(R.string.call_log_volte)
+                                            allCaps = true
+                                        }
+                                        mHdRadioButton = radioButton {
+                                            //android:ellipsize = end //not support attribute
+                                            ellipsize = TextUtils.TruncateAt.END
+                                            maxLines = 1
+                                            text = resources.getString(R.string.call_log_volte_hd)
+                                            allCaps = false
+                                        }
+                                        mVowifiRadioButton = radioButton {
+                                            ellipsize = TextUtils.TruncateAt.END
+                                            maxLines = 1
+                                            text = resources.getString(R.string.call_log_vowifi)
+                                            allCaps = false
+                                        }
+                                        mNoneRadioButton = radioButton {
+                                            ellipsize = TextUtils.TruncateAt.END
+                                            maxLines = 1
+                                            text = resources.getString(R.string.call_log_volte_none)
+                                            allCaps = false
+                                        }
+                                    }
+                                    mEncryptedCallCheckBox = checkBox {
+                                        text = resources.getString(R.string.call_log_encrypt)
+                                        allCaps = false
+                                        visibility = View.GONE
+                                    }
+                                    mVideoCallCheckBox = checkBox {
+                                        text = resources.getString(R.string.call_log_video)
+                                        allCaps = false
+                                        visibility = View.GONE
+                                    }
+                                }.lparams(width = matchParent)
+
+                                mSubscriptionRadioGroup = subscriptionLayout(context)
+
+                                mRollDiceCheckBox = checkBox {
+                                    text = resources.getString(R.string.call_log_roll_dice)
+                                    setOnCheckedChangeListener(mCheckedChangeListener)
+                                }
+                                frameLayout {
+                                    textInputLayout {
+                                        mCallLogQuantityEditText = editText {
+                                            hint = resources.getString(R.string.calllog_quantity_hint)
+                                            inputType = InputType.TYPE_CLASS_NUMBER or InputType.TYPE_NUMBER_FLAG_SIGNED
+                                        }.lparams(width = matchParent)
+                                    }.lparams(width = matchParent)
+                                }
+                                mStartForkButton = button {
+                                    text = resources.getString(R.string.start_fork_call_logs)
+                                    allCaps = false
+                                    setOnClickListener(mOnClickListener)
+                                }.lparams(width = matchParent)
+                            }.lparams(width = matchParent)
+                        }
+                    }
+                    return mRootView
+                }
     }
 }

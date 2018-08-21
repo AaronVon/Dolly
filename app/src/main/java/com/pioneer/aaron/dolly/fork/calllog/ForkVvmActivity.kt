@@ -1,15 +1,21 @@
 package com.pioneer.aaron.dolly.fork.calllog
 
+import android.graphics.Color
 import android.os.Bundle
 import android.support.design.widget.Snackbar
 import android.util.Log
 import android.view.View
 import android.view.ViewStub
 import android.widget.*
+import anko.Id
+import anko.immersiveToolbar
+import anko.subscriptionLayout
 import com.pioneer.aaron.dolly.R
 import com.pioneer.aaron.dolly.utils.ExpandCollapseAnimation
 import com.pioneer.aaron.dolly.utils.ForkConstants
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity
+import org.jetbrains.anko.*
+import org.jetbrains.anko.appcompat.v7.toolbar
 
 /**
  * Created by Aaron on 11/8/17.
@@ -22,7 +28,7 @@ class ForkVvmActivity : SwipeBackActivity(), IForkCallLogContract.View {
 
     private lateinit var mPresenter: IForkCallLogContract.Presenter
 
-    private  var mAdvancedOptViewOpened = false
+    private var mAdvancedOptViewOpened = false
     private lateinit var mPhoneNumberEditText: EditText
     private lateinit var mStartForkButton: Button
     private var mAdvancedViewStub: ViewStub? = null
@@ -36,11 +42,10 @@ class ForkVvmActivity : SwipeBackActivity(), IForkCallLogContract.View {
     private lateinit var mSubscriptionRadioGroup: RadioGroup
     private lateinit var mSubOneRadioButton: RadioButton
     private lateinit var mSubTwoRadioButton: RadioButton
+    private lateinit var mCallLogNumberInputLayout: ViewStub
 
     private val mOnClickListener = View.OnClickListener { v ->
         when (v.id) {
-            R.id.start_fork_calllog_btn -> mPresenter.forkVvmCallLog(this@ForkVvmActivity, mPhoneNumberEditText.text.toString(),
-                    if (mSubOneRadioButton.isChecked) ForkConstants.SIM_ONE else ForkConstants.SIM_TWO)
             R.id.config_btn -> mPresenter.sendVvmState(ForkCallLogPresenter.VVM_STATE.CONFIGURATION, mConfigSpinner.selectedItem.toString())
             R.id.data_btn -> mPresenter.sendVvmState(ForkCallLogPresenter.VVM_STATE.DATA, mDataSpinner.selectedItem.toString())
             R.id.notification_btn -> mPresenter.sendVvmState(ForkCallLogPresenter.VVM_STATE.NOTIFICATION, mNotificationSpinner.selectedItem.toString())
@@ -50,8 +55,8 @@ class ForkVvmActivity : SwipeBackActivity(), IForkCallLogContract.View {
     }
 
     private val mOnLongClickListener = View.OnLongClickListener { v ->
-        when (v.id) {
-            R.id.start_fork_calllog_btn -> {
+        when (v) {
+            mStartForkButton -> {
                 mPresenter.vibrate()
                 loadAdvancedView()
                 animateAdvancedOptView(!mAdvancedOptViewOpened)
@@ -64,7 +69,11 @@ class ForkVvmActivity : SwipeBackActivity(), IForkCallLogContract.View {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_forkvvm)
+        anko.makeImmersive(window)
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_STABLE or
+                View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+        window.statusBarColor = Color.TRANSPARENT
+        ForkVvmActivityUI().setContentView(this)
 
         mPresenter = ForkCallLogPresenter(this, this)
         mPresenter.loadResInBackground(this)
@@ -78,15 +87,12 @@ class ForkVvmActivity : SwipeBackActivity(), IForkCallLogContract.View {
             setSwipeBackEnable(false)
         }
 
+        mCallLogNumberInputLayout.inflate()
+
         mPhoneNumberEditText = findViewById<View>(R.id.call_log_number_edtxt) as EditText
-        mStartForkButton = findViewById<View>(R.id.start_fork_calllog_btn) as Button
-        mStartForkButton.setOnClickListener(mOnClickListener)
-        mStartForkButton.setOnLongClickListener(mOnLongClickListener)
-        mAdvancedViewStub = findViewById<View>(R.id.advanced_vvm_viewstub) as ViewStub
-        mSubscriptionRadioGroup = findViewById<View>(R.id.subscription_id_group) as RadioGroup
-        mSubOneRadioButton = findViewById<View>(R.id.sub_one) as RadioButton
+        mSubOneRadioButton = findViewById<View>(Id.subOneRadioButton) as RadioButton
         mSubOneRadioButton.isChecked = true
-        mSubTwoRadioButton = findViewById<View>(R.id.sub_two) as RadioButton
+        mSubTwoRadioButton = findViewById<View>(Id.subTwoRadioButton) as RadioButton
     }
 
     private fun loadAdvancedView() {
@@ -130,5 +136,42 @@ class ForkVvmActivity : SwipeBackActivity(), IForkCallLogContract.View {
 
     override fun toast(msg: String) {
         Snackbar.make(mStartForkButton, msg, Snackbar.LENGTH_SHORT).show()
+    }
+
+    inner class ForkVvmActivityUI : AnkoComponent<ForkVvmActivity> {
+        override fun createView(ui: AnkoContext<ForkVvmActivity>): View =
+                with(ui) {
+                    verticalLayout {
+                        immersiveToolbar(this@ForkVvmActivity)
+
+                        scrollView {
+                            verticalLayout {
+                                padding = dimen(R.dimen.activity_horizontal_margin)
+
+                                mCallLogNumberInputLayout = viewStub {
+                                    layoutResource = R.layout.call_log_number_input_layout
+                                }
+
+                                mSubscriptionRadioGroup = subscriptionLayout(context)
+
+                                mAdvancedViewStub = viewStub {
+                                    layoutResource = R.layout.advanced_opt_vvm_layout
+                                }
+
+                                mStartForkButton = button {
+                                    text = getString(R.string.start_fork_call_logs)
+                                    allCaps = false
+                                    setOnClickListener {
+                                        mPresenter.forkVvmCallLog(this@ForkVvmActivity, mPhoneNumberEditText.text.toString(),
+                                                if (mSubOneRadioButton.isChecked) ForkConstants.SIM_ONE else ForkConstants.SIM_TWO)
+                                    }
+                                    setOnLongClickListener(mOnLongClickListener)
+                                }
+                            }
+                        }
+
+                    }
+                }
+
     }
 }
