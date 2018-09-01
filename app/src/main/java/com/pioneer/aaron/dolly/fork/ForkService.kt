@@ -124,9 +124,7 @@ class ForkService : Service() {
         }
 
         fun cancelFork() {
-            if (mForkTask != null) {
-                mForkTask!!.cancelFork()
-            }
+            mForkTask?.cancelFork()
         }
     }
 

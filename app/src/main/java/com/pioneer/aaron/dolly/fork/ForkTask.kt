@@ -138,13 +138,13 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
                 values.put(ForkCallLogData.SUBJECT, Matrix.randomSubject)
                 values.put(ForkCallLogData.POST_CALL_TEXT, Matrix.randomPostCallText)
             } else {
-                if (columnsExists[ForkCallLogData.ENCRYPT_CALL]!!) {
+                if (columnsExists[ForkCallLogData.ENCRYPT_CALL] == true) {
                     values.put(ForkCallLogData.ENCRYPT_CALL, Matrix.randomEncryptCall)
                 }
-                if (columnsExists[ForkCallLogData.FEATURES]!!) {
+                if (columnsExists[ForkCallLogData.FEATURES] == true) {
                     values.put(ForkCallLogData.FEATURES, Matrix.randomFeatures)
                 }
-                if (columnsExists[ForkCallLogData.CALL_TYPE]!!) {
+                if (columnsExists[ForkCallLogData.CALL_TYPE] == true) {
                     values.put(ForkCallLogData.CALL_TYPE, Matrix.randomCallType)
                 }
                 values.put(CallLog.Calls.PHONE_ACCOUNT_ID, Matrix.randomSubId)
@@ -180,7 +180,7 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
         if (context == null || data == null) {
             return TYPE_FAILED
         }
-        val columnsExists = DataBaseOperator.getInstance(context)!!.columnsExists
+        val columnsExists = DataBaseOperator.getInstance(context).columnsExists
 
         val values = ContentValues()
         values.put(CallLog.Calls.NUMBER, data.phoneNum)
@@ -194,13 +194,13 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
             values.put(ForkCallLogData.SUBJECT, data.subject)
             values.put(ForkCallLogData.POST_CALL_TEXT, data.postCallText)
         } else {
-            if (columnsExists[ForkCallLogData.CALL_TYPE]!!) {
+            columnsExists[ForkCallLogData.CALL_TYPE]?.let {
                 values.put(ForkCallLogData.CALL_TYPE, data.callType)
             }
-            if (columnsExists[ForkCallLogData.ENCRYPT_CALL]!!) {
+            columnsExists[ForkCallLogData.ENCRYPT_CALL]?.let {
                 values.put(ForkCallLogData.ENCRYPT_CALL, data.enryptCall)
             }
-            if (columnsExists[ForkCallLogData.FEATURES]!!) {
+            columnsExists[ForkCallLogData.FEATURES]?.let {
                 values.put(ForkCallLogData.FEATURES, data.features)
             }
         }
@@ -358,16 +358,14 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
             /* Avatar */
             if (avatarIncluded) {
                 val avatarBytes = Matrix.getRandomAvatar(context)
-                if (avatarBytes != null) {
+                avatarBytes?.let {
                     operations.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
                             .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
                             .withValue(ContactsContract.Data.IS_SUPER_PRIMARY, 1)
                             .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
                             .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, avatarBytes)
                             .build())
-                } else {
-                    Log.d(TAG, "Failed to set avatar due to null byte[]")
-                }
+                } ?: run { Log.d(TAG, "Failed to set avatar due to null byte[]") }
             }
 
             ++bulkSize

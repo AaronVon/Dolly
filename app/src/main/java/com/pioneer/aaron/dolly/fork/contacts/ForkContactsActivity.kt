@@ -77,7 +77,7 @@ class ForkContactsActivity : SwipeBackActivity(), IForkContactContract.View {
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
-            PermissionChecker.PERMISSION_REQUEST_CODE -> if (grantResults.size > 0) {
+            PermissionChecker.PERMISSION_REQUEST_CODE -> if (grantResults.isNotEmpty()) {
                 var allPermissionGranted = true
                 for (result in grantResults) {
                     if (result != PackageManager.PERMISSION_GRANTED) {

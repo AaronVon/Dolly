@@ -15,15 +15,15 @@ import java.util.concurrent.Executors
 
 class DataBaseOperator private constructor(mContext: Context) {
     private val mSingleExecutorService: ExecutorService = Executors.newSingleThreadExecutor()
-    private var mColumnExists: HashMap<String, Boolean>? = null
+    private var mColumnExists = HashMap<String, Boolean>()
 
     private val mCheckColumnsRunnable = Runnable { mColumnExists = checkColumnsExists(*DataBaseOperator.CALLLOG_COLUMNS) }
 
     val columnsExists: HashMap<String, Boolean>
-        get() = if (mColumnExists == null || mColumnExists!!.isEmpty()) {
+        get() = if (mColumnExists.isEmpty()) {
             checkColumnsExists(*DataBaseOperator.CALLLOG_COLUMNS)
         } else {
-            mColumnExists!!
+            mColumnExists
         }
 
     private var mWeakRef: WeakReference<Context>
@@ -34,7 +34,6 @@ class DataBaseOperator private constructor(mContext: Context) {
     }
 
     private fun checkColumnsExists(vararg columns: String): HashMap<String, Boolean> {
-        mColumnExists = HashMap()
         val hashMap = HashMap<String, Boolean>()
         val cursor: Cursor?
         if (mWeakRef.get() == null) {
@@ -43,7 +42,7 @@ class DataBaseOperator private constructor(mContext: Context) {
         val contentResolver = mWeakRef.get()!!.contentResolver
         cursor = contentResolver.query(CallLog.Calls.CONTENT_URI, null, null, null, null, null)
 
-        if (cursor != null) {
+        cursor?.let {
             for (column in columns) {
                 hashMap[column] = cursor.getColumnIndex(column) != -1
             }

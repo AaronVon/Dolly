@@ -16,6 +16,7 @@ import java.io.IOException
 import java.io.InputStreamReader
 import java.lang.ref.WeakReference
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * Created by Aaron on 4/29/17.
@@ -68,25 +69,25 @@ object Matrix {
 
     private const val ENGLISH_NAME_FILE = "EnglishName.txt"
     private const val CHINESE_NAME_FILE = "ChineseName.txt"
-    private var mEnglishName: ArrayList<String>? = null
+    private var mEnglishName = ArrayList<String>()
     private var mEnglishNameSize: Int = 0
-    private var mChineseName: ArrayList<String>? = null
+    private var mChineseName = ArrayList<String>()
     private var mChineseNameSize: Int = 0
 
     private const val ORGANIZATION_FILE = "fortune_global_500.txt"
-    private var mOrganizations: ArrayList<String>? = null
+    private var mOrganizations = ArrayList<String>()
     private var mOrganizationSize: Int = 0
 
-    private var mLocales: Array<Locale>? = null
+    private var mLocales = ArrayList<Locale>()
     private var mLocaleSize = 0
 
     private const val PATH_AVATARS = "avatars"
-    private var mAvatarFileNames: Array<String>? = null
+    private var mAvatarFileNames = ArrayList<String>()
 
     private val sLock = Any()
     private val sContactNumberLock = Any()
 
-    private var mNumbers: ArrayList<String>? = null
+    private var mNumbers = ArrayList<String>()
     private var mNumberSize = 0
 
     val randomPhoneNum: String
@@ -129,12 +130,12 @@ object Matrix {
             val name = StringBuilder()
             if (getEnglish) {
                 val index = Math.abs(sRandom.nextInt(mEnglishNameSize))
-                name.append(mEnglishName!![index])
+                name.append(mEnglishName[index])
                         .append(Math.abs(sRandom.nextInt(ENGLISH_NAME_SUFIX)))
             } else {
                 val len = Math.abs(sRandom.nextInt(CHINESE_NAME_SUFIX)) + 1
                 for (i in 0 until len) {
-                    name.append(mChineseName!![Math.abs(sRandom.nextInt(mChineseNameSize))])
+                    name.append(mChineseName[Math.abs(sRandom.nextInt(mChineseNameSize))])
                 }
             }
             return name.toString()
@@ -174,12 +175,12 @@ object Matrix {
      */
     val randomCountry: String
         get() {
-            var location: String? = null
+            var location: String
             do {
                 val index = sRandom.nextInt(mLocaleSize)
-                location = mLocales!![index].displayCountry
+                location = mLocales[index].displayCountry
             } while (TextUtils.isEmpty(location))
-            return location!!
+            return location
         }
 
     /**
@@ -204,7 +205,7 @@ object Matrix {
      * @return
      */
     val randomOrganization: String
-        get() = mOrganizations!![sRandom.nextInt(mOrganizationSize)]
+        get() = mOrganizations[sRandom.nextInt(mOrganizationSize)]
 
     val randomOrganizationType: Int
         get() = if (sRandom.nextBoolean())
@@ -268,89 +269,67 @@ object Matrix {
                 loadPredefinedEnglishName(context)
                 setLocales()
             } else {
-                if (mOrganizations == null) {
-                    loadPredefinedOrganization(context)
-                }
-                if (mChineseName == null) {
-                    loadPredefinedChineseName(context)
-                }
-                if (mEnglishName == null) {
-                    loadPredefinedEnglishName(context)
-                }
-                if (mLocales == null) {
-                    setLocales()
-                }
+                mOrganizations.isEmpty().let { loadPredefinedOrganization(context) }
+                mChineseName.isEmpty().let { loadPredefinedChineseName(context) }
+                mEnglishName.isEmpty().let { loadPredefinedEnglishName(context) }
+                mLocales.isEmpty().let { setLocales() }
             }
             loadAvatarsFileNames(context)
         }
     }
 
     private fun loadPredefinedOrganization(context: Context) {
-        if (mOrganizations != null) {
-            mOrganizations!!.clear()
-        } else {
-            mOrganizations = ArrayList()
-        }
+        mOrganizations.clear()
         mOrganizations = readFromTextFile(context, ORGANIZATION_FILE)
-        mOrganizationSize = mOrganizations!!.size
+        mOrganizationSize = mOrganizations.size
     }
 
     private fun loadPredefinedEnglishName(context: Context) {
-        if (mEnglishName != null) {
-            mEnglishName!!.clear()
-        } else {
-            mEnglishName = ArrayList()
-        }
         mEnglishName = readFromTextFile(context, ENGLISH_NAME_FILE)
-        mEnglishNameSize = mEnglishName!!.size
+        mEnglishNameSize = mEnglishName.size
     }
 
     private fun loadPredefinedChineseName(context: Context) {
-        if (mChineseName != null) {
-            mChineseName!!.clear()
-        } else {
-            mChineseName = ArrayList()
-        }
         mChineseName = readFromTextFile(context, CHINESE_NAME_FILE)
-        mChineseNameSize = mChineseName!!.size
+        mChineseNameSize = mChineseName.size
     }
 
     private fun readFromTextFile(context: Context?, fileName: String): ArrayList<String> {
+        val arrayList = ArrayList<String>()
         if (context == null) {
             Log.e(TAG, "readFromTextFile: Failed. context is NULL")
-        }
-        val arrayList = ArrayList<String>()
-        try {
-            val inputStream = context!!.assets.open(fileName)
-            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-            val lineList = mutableListOf<String>()
-            inputStream.bufferedReader().useLines { ln->ln.forEach { lineList.add(it) } }
-            lineList.forEach{arrayList.add(it) }
-            inputStream.close()
-            bufferedReader.close()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        } finally {
+        } else {
+            try {
+                val inputStream = context.assets.open(fileName)
+                val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+                val lineList = mutableListOf<String>()
+                inputStream.bufferedReader().useLines { ln -> ln.forEach { lineList.add(it) } }
+                lineList.forEach { arrayList.add(it) }
+                inputStream.close()
+                bufferedReader.close()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            } finally {
 
+            }
         }
         return arrayList
     }
 
     fun preloadContactPhoneNums(context: Context) {
         synchronized(sContactNumberLock) {
-            if (mNumbers == null) {
-                mNumbers = ArrayList()
+            mNumbers.isEmpty().let {
                 val people = context.contentResolver.query(
                         ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                         arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER), null, null, BaseColumns._ID + " LIMIT 500"
                 )
-                if (people != null) {
+                people?.let {
                     val phoneNumColumneIndex = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
                     people.moveToFirst()
                     while (people.moveToNext()) {
-                        mNumbers!!.add(people.getString(phoneNumColumneIndex))
+                        mNumbers.add(people.getString(phoneNumColumneIndex))
                     }
-                    mNumberSize = mNumbers!!.size
+                    mNumberSize = mNumbers.size
                     people.close()
                 }
             }
@@ -358,23 +337,22 @@ object Matrix {
     }
 
     private fun setLocales() {
-        if (mLocales == null) {
-            mLocales = Locale.getAvailableLocales()
-            mLocaleSize = mLocales!!.size
+        val locales = Locale.getAvailableLocales()
+        for (locale in locales) {
+            mLocales.add(locale)
         }
+        mLocaleSize = mLocales.size
     }
 
     fun getRandomPhoneNumWithExistingContact(context: Context): String {
-        if (mNumbers == null) {
-            preloadContactPhoneNums(context)
-        }
+        mNumbers.isEmpty().let { preloadContactPhoneNums(context) }
         return if (sRandom.nextBoolean()) {
             randomPhoneNum
         } else {
             if (mNumberSize <= 0) {
                 randomPhoneNum
             } else {
-                mNumbers!![sRandom.nextInt(mNumberSize)]
+                mNumbers[sRandom.nextInt(mNumberSize)]
             }
         }
     }
@@ -391,7 +369,10 @@ object Matrix {
 
     private fun loadAvatarsFileNames(context: Context) {
         try {
-            mAvatarFileNames = context.assets.list(PATH_AVATARS)
+            val avatars = context.assets.list(PATH_AVATARS)
+            for (avatar in avatars) {
+                mAvatarFileNames.add(avatar)
+            }
         } catch (e: IOException) {
             e.printStackTrace()
         }
@@ -402,11 +383,11 @@ object Matrix {
         var avatarBytes: ByteArray? = null
         var avatar: Bitmap? = null
         var avatarFileName = ""
-        if (mAvatarFileNames == null) {
+        if (mAvatarFileNames.isEmpty()) {
             Log.i(TAG, "getRandomAvatar: failed to get avatar assets. Using default avatar")
             avatar = BitmapFactory.decodeResource(context.resources, R.mipmap.fork_icon)
         } else {
-            avatarFileName = mAvatarFileNames!![sRandom.nextInt(mAvatarFileNames!!.size)]
+            avatarFileName = mAvatarFileNames[sRandom.nextInt(mAvatarFileNames.size)]
             try {
                 val avatarInputStream = context.assets.open("$PATH_AVATARS/$avatarFileName")
                 avatar = BitmapFactory.decodeStream(avatarInputStream)

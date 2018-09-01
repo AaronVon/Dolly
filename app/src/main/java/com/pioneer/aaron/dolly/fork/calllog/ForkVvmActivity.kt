@@ -123,13 +123,13 @@ class ForkVvmActivity : SwipeBackActivity(), IForkCallLogContract.View {
      * @param open TRUE to open, while FALSE to close.
      */
     private fun animateAdvancedOptView(open: Boolean) {
-        if (mAdvancedView != null) {
+        mAdvancedView?.let {
             mAdvancedOptViewOpened = !mAdvancedOptViewOpened
             val animation = ExpandCollapseAnimation(mAdvancedView!!,
                     if (open) ExpandCollapseAnimation.EXPANEDED else ExpandCollapseAnimation.COLLAPSED)
             animation.duration = 200
             mAdvancedView!!.startAnimation(animation)
-        } else {
+        } ?: run {
             Log.d(TAG, "Failed to animate advanced opt view due to null object.")
         }
     }

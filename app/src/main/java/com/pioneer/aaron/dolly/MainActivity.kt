@@ -67,10 +67,9 @@ class MainActivity : AppCompatActivity(), IMainContract.View {
                                     }
                                     setOnLongClickListener {
                                         val columnExists = DataBaseOperator.getInstance(this@MainActivity).columnsExists
-
-                                        if (columnExists[ForkCallLogData.SUBJECT]!!
-                                                && columnExists[ForkCallLogData.POST_CALL_TEXT]!!
-                                                && columnExists[ForkCallLogData.IS_PRIMARY]!!) {
+                                        if (columnExists[ForkCallLogData.SUBJECT] != null
+                                                && columnExists[ForkCallLogData.POST_CALL_TEXT] != null
+                                                && columnExists[ForkCallLogData.IS_PRIMARY] != null) {
                                             mPresenter.vibrate()
                                             mPresenter.forkRCS(this@MainActivity)
                                         }
