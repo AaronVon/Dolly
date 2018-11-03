@@ -83,35 +83,36 @@ class ForkService : Service() {
                 toastForking(true)
                 when (fork_type) {
                     ForkTask.FORK_TYPE_SPECIFIED_CALLLOGS -> {
-                        mForkTask!!.execute(fork_type, forkQuantity, data)
+                        mForkTask!!.execute(ForkTask.ForkTaskData(fork_type, forkQuantity, data))
+
                         total = forkQuantity
                     }
 
                     ForkTask.FORK_TYPE_RANDOM_CALLLOGS -> {
-                        mForkTask!!.execute(fork_type, forkQuantity)
+                        mForkTask!!.execute(ForkTask.ForkTaskData(fork_type,forkQuantity))
                         total = forkQuantity
                     }
 
                     ForkTask.FORK_TYPE_RANDOM_CONTACT -> {
-                        mForkTask!!.execute(fork_type, forkQuantity, avatarIncluded)
+                        mForkTask!!.execute(ForkTask.ForkTaskData(fork_type, forkQuantity, includeAvatar = avatarIncluded))
                         total = forkQuantity
                     }
 
                     ForkTask.FORK_TYPE_ALL_TYPE_CONTACT -> {
-                        mForkTask!!.execute(fork_type, forkQuantity, avatarIncluded)
+                        mForkTask!!.execute(ForkTask.ForkTaskData(fork_type, forkQuantity, includeAvatar = avatarIncluded))
                         total = forkQuantity
                     }
 
                     ForkTask.FORK_TYPE_RANDOM_RCS_CALLLOGS -> {
-                        mForkTask!!.execute(fork_type, forkQuantity)
+                        mForkTask!!.execute(ForkTask.ForkTaskData(fork_type, forkQuantity))
                         total = forkQuantity
                     }
                     ForkTask.FORK_TYPE_SPECIFIED_RCS_CALLLOGS -> {
-                        mForkTask!!.execute(fork_type, forkQuantity, data)
+                        mForkTask!!.execute(ForkTask.ForkTaskData(fork_type, forkQuantity, data))
                         total = forkQuantity
                     }
                     ForkTask.FORK_TYPE_VVM -> {
-                        mForkTask!!.execute(fork_type, data)
+                        mForkTask!!.execute(ForkTask.ForkTaskData(fork_type, forkCallLogData = data))
                         total = 1
                     }
                     else -> {

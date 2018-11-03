@@ -294,24 +294,20 @@ object Matrix {
         mChineseNameSize = mChineseName.size
     }
 
-    private fun readFromTextFile(context: Context?, fileName: String): ArrayList<String> {
+    private fun readFromTextFile(context: Context, fileName: String): ArrayList<String> {
         val arrayList = ArrayList<String>()
-        if (context == null) {
-            Log.e(TAG, "readFromTextFile: Failed. context is NULL")
-        } else {
-            try {
-                val inputStream = context.assets.open(fileName)
-                val bufferedReader = BufferedReader(InputStreamReader(inputStream))
-                val lineList = mutableListOf<String>()
-                inputStream.bufferedReader().useLines { ln -> ln.forEach { lineList.add(it) } }
-                lineList.forEach { arrayList.add(it) }
-                inputStream.close()
-                bufferedReader.close()
-            } catch (e: IOException) {
-                e.printStackTrace()
-            } finally {
+        try {
+            val inputStream = context.assets.open(fileName)
+            val bufferedReader = BufferedReader(InputStreamReader(inputStream))
+            val lineList = mutableListOf<String>()
+            inputStream.bufferedReader().useLines { ln -> ln.forEach { lineList.add(it) } }
+            lineList.forEach { arrayList.add(it) }
+            inputStream.close()
+            bufferedReader.close()
+        } catch (e: IOException) {
+            e.printStackTrace()
+        } finally {
 
-            }
         }
         return arrayList
     }
@@ -427,17 +423,14 @@ object Matrix {
         }
 
         override fun doInBackground(vararg p0: Int?): Void? {
-            val context = weakReference.get()
-            if (context == null) {
-                Log.i(TAG, "LoadResAsyncTask: Failed to load res due to context is NULL")
-                return null
-            }
-            when (p0[0]) {
-                RES_TYPE_LOAD.CONTACT_NUMBRES -> Matrix.preloadContactPhoneNums(context)
-                RES_TYPE_LOAD.ASSET_RES -> Matrix.loadResources(context, true)
-                else -> {
+            weakReference.get()?.let {
+                when (p0[0]) {
+                    RES_TYPE_LOAD.CONTACT_NUMBRES -> Matrix.preloadContactPhoneNums(it)
+                    RES_TYPE_LOAD.ASSET_RES -> Matrix.loadResources(it, true)
+                    else -> {
+                    }
                 }
-            }
+            } ?: Log.e(TAG, "LoadResAsyncTask: Failed to load res due to context is NULL")
             return null
         }
     }

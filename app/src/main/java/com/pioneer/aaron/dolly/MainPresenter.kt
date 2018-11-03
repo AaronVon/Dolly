@@ -47,19 +47,16 @@ class MainPresenter(mContext: Context) : IMainContract.Presenter {
     }
 
     private class MainHandler internal constructor(context: Context) : Handler() {
-        private val weakReference: WeakReference<Context> = WeakReference(context)
+        private val weakRef: WeakReference<Context> = WeakReference(context)
 
         override fun handleMessage(msg: Message) {
-            val context = weakReference.get()
-            if (context == null) {
-                Log.i(TAG, "MainHandler failed to handle msg due to context is NULL")
-                return
-            }
-            when (msg.what) {
-                ForkConstants.VIBRATE_ON_LONG_CLICK -> ForkVibrator.getInstance(context)?.vibrate(70)
-                else -> {
+            weakRef.get()?.let {
+                when (msg.what) {
+                    ForkConstants.VIBRATE_ON_LONG_CLICK -> ForkVibrator.getInstance(it)?.vibrate(70)
+                    else -> {
+                    }
                 }
-            }
+            } ?: Log.w(TAG, "MainHandler failed to handle msg due to context is NULL")
         }
     }
 
@@ -105,7 +102,7 @@ class MainPresenter(mContext: Context) : IMainContract.Presenter {
 
         builder.setTitle(R.string.menu_call_log_rcs)
                 .setNegativeButton(R.string.dialog_cancel, null)
-                .setPositiveButton(R.string.start_fork_call_logs) { dialog, _ ->
+                .setPositiveButton(R.string.start_fork_call_logs) { _, _ ->
                     if (rollDiceCheckBox.isChecked) {
                         startForkRandomRCS(Integer.parseInt(quantityEditText.text.toString()))
                     } else {
@@ -153,8 +150,8 @@ class MainPresenter(mContext: Context) : IMainContract.Presenter {
     }
 
     companion object {
-        private val TAG = "MainPresenter"
+        private val TAG = MainPresenter::class.java.simpleName
 
-        private val CALLLOG_DEFAULT_QUANTITY = 5
+        private const val CALLLOG_DEFAULT_QUANTITY = 5
     }
 }

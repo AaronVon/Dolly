@@ -80,25 +80,22 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
             }
             data.type = type
 
-            var volte_type = 0
+            var volteType = 0
             if (mCallLogVolteGroup.visibility == View.VISIBLE) {
-                if (mVolteRadioButton.isChecked) {
-                    volte_type = 82
-                } else if (mVowifiRadioButton.isChecked) {
-                    volte_type = 83
-                } else if (mHdRadioButton.isChecked) {
-                    volte_type = 81
-                } else if (mNoneRadioButton.isChecked) {
-                    volte_type = 0
+                when {
+                    mVolteRadioButton.isChecked -> volteType = 82
+                    mVowifiRadioButton.isChecked -> volteType = 83
+                    mHdRadioButton.isChecked -> volteType = 81
+                    mNoneRadioButton.isChecked -> volteType = 0
                 }
             }
-            data.callType = volte_type
+            data.callType = volteType
 
-            var encrypt_call = 0
+            var encryptCall = 0
             if (mEncryptedCallCheckBox.visibility == View.VISIBLE && mEncryptedCallCheckBox.isChecked) {
-                encrypt_call = 1
+                encryptCall = 1
             }
-            data.enryptCall = encrypt_call
+            data.enryptCall = encryptCall
 
             var features = 0
             if (mVideoCallCheckBox.visibility == View.VISIBLE && mVideoCallCheckBox.isChecked) {
@@ -255,7 +252,7 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
     }
 
     companion object {
-        private val TAG = "ForkCallLogActivity"
+        private val TAG = ForkCallLogActivity::class.java.simpleName
     }
 
     inner class ForkCallLogActivityUI : AnkoComponent<ForkCallLogActivity> {

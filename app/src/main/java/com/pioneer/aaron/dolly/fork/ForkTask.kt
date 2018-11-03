@@ -1,6 +1,7 @@
 package com.pioneer.aaron.dolly.fork
 
 import android.content.*
+import android.graphics.Typeface
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.RemoteException
@@ -23,7 +24,7 @@ import java.util.*
  * Created by Aaron on 5/1/17.
  */
 
-class ForkTask(private val mForkListener: IForkListener, context: Context) : AsyncTask<Any, Int, Int>() {
+class ForkTask(private val mForkListener: IForkListener, context: Context) : AsyncTask<ForkTask.ForkTaskData, Int, Int>() {
     private val mWeakReference: WeakReference<Context> = WeakReference(context)
     private val mBaseUri: Uri
     private val mContentResolver: ContentResolver
@@ -37,28 +38,28 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
         mContentResolver = context.contentResolver
     }
 
-    override fun doInBackground(vararg params: Any): Int? {
+    override fun doInBackground(vararg param: ForkTaskData): Int {
         val context = mWeakReference.get()
         var result = TYPE_FAILED
         if (context == null) {
             Log.i(TAG, "ForkTask.doInBackground failed due to context is NULL")
             return result
         }
-        if (params[0] is Int) {
-            val type = params[0]
-            Matrix.loadResources(context, false)
-            result = when (type) {
-                FORK_TYPE_RANDOM_CALLLOGS -> forkRandomCallLogs(context, params[1] as Int, false)
-                FORK_TYPE_SPECIFIED_CALLLOGS -> forkSpecifiedCallLog(context, params[2] as ForkCallLogData, false)
-                FORK_TYPE_RANDOM_CONTACT -> forkContacts(context, params[1] as Int, false, params[2] as Boolean)
-                FORK_TYPE_ALL_TYPE_CONTACT -> forkContacts(context, params[1] as Int, true, params[2] as Boolean)
-                FORK_TYPE_RANDOM_RCS_CALLLOGS -> forkRandomCallLogs(context, params[1] as Int, true)
-                FORK_TYPE_SPECIFIED_RCS_CALLLOGS -> forkSpecifiedCallLog(context, params[2] as ForkCallLogData, true)
-                FORK_TYPE_VVM -> forkVvmCallLog(params[1] as ForkCallLogData, context)
-                else -> TYPE_FAILED
-            }
-        } else {
-            result = TYPE_FAILED
+        val data = param[0]
+
+        Matrix.loadResources(context, false)
+        result = when (data.forkType) {
+            FORK_TYPE_RANDOM_CALLLOGS -> forkRandomCallLogs(context, data.forkQuantity, false)
+            FORK_TYPE_SPECIFIED_CALLLOGS -> data.forkCallLogData?.let { forkSpecifiedCallLog(context, data.forkCallLogData, false) }
+                    ?: TYPE_FAILED
+            FORK_TYPE_RANDOM_CONTACT -> forkContacts(context, data.forkQuantity, false, data.includeAvatar)
+            FORK_TYPE_ALL_TYPE_CONTACT -> forkContacts(context, data.forkQuantity, true, data.includeAvatar)
+            FORK_TYPE_RANDOM_RCS_CALLLOGS -> forkRandomCallLogs(context, data.forkQuantity, true)
+            FORK_TYPE_SPECIFIED_RCS_CALLLOGS -> data.forkCallLogData?.let { forkSpecifiedCallLog(context, data.forkCallLogData, true) }
+                    ?: TYPE_FAILED
+            FORK_TYPE_VVM -> data.forkCallLogData?.let { forkVvmCallLog(data.forkCallLogData, context) }
+                    ?: TYPE_FAILED
+            else -> TYPE_FAILED
         }
         return result
     }
@@ -176,70 +177,8 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
         return TYPE_COMPLETED
     }
 
-    private fun forkSpecifiedCallLog(context: Context?, data: ForkCallLogData?, isRCS: Boolean): Int {
-        if (context == null || data == null) {
-            return TYPE_FAILED
-        }
-        val columnsExists = DataBaseOperator.getInstance(context).columnsExists
-
-        val values = ContentValues()
-        values.put(CallLog.Calls.NUMBER, data.phoneNum)
-        values.put(CallLog.Calls.TYPE, data.type)
-        values.put(CallLog.Calls.NEW, if (data.type == CallLog.Calls.MISSED_TYPE) 0 else 1)
-        values.put(CallLog.Calls.DATE, System.currentTimeMillis())
-        values.put(CallLog.Calls.PHONE_ACCOUNT_ID, data.subId)
-
-        if (isRCS) {
-            values.put(ForkCallLogData.IS_PRIMARY, 1)
-            values.put(ForkCallLogData.SUBJECT, data.subject)
-            values.put(ForkCallLogData.POST_CALL_TEXT, data.postCallText)
-        } else {
-            columnsExists[ForkCallLogData.CALL_TYPE]?.let {
-                values.put(ForkCallLogData.CALL_TYPE, data.callType)
-            }
-            columnsExists[ForkCallLogData.ENCRYPT_CALL]?.let {
-                values.put(ForkCallLogData.ENCRYPT_CALL, data.enryptCall)
-            }
-            columnsExists[ForkCallLogData.FEATURES]?.let {
-                values.put(ForkCallLogData.FEATURES, data.features)
-            }
-        }
-
-        val operation = ContentProviderOperation
-                .newInsert(CallLog.Calls.CONTENT_URI)
-                .withValues(values)
-                .withYieldAllowed(true)
-                .build()
-
-        val operations = ArrayList<ContentProviderOperation>()
-        var bulkSize = 0
-        val quantity = data.quantity
-        for (i in 0 until quantity) {
-            operations.add(operation)
-            ++bulkSize
-            if (mForkCanceled) {
-                return TYPE_CANCELED
-            }
-            if (bulkSize >= FORK_BULK_SIZE || i >= quantity - 1) {
-                try {
-                    context.contentResolver.applyBatch(CallLog.AUTHORITY, operations)
-                } catch (e: RemoteException) {
-                    e.printStackTrace()
-                } catch (e: OperationApplicationException) {
-                    e.printStackTrace()
-                }
-
-                operations.clear()
-                bulkSize = 0
-                val progress = i * 100 / quantity
-                publishProgress(progress, i + 1)
-            }
-        }
-        return TYPE_COMPLETED
-    }
-
-    private fun forkContacts(context: Context?, quantity: Int, allType: Boolean, avatarIncluded: Boolean): Int {
-        if (context == null || quantity <= 0) {
+    private fun forkContacts(context: Context, quantity: Int, allType: Boolean, avatarIncluded: Boolean): Int {
+        if (quantity <= 0) {
             return TYPE_FAILED
         }
         val forkSpData = ForkContacts(quantity)
@@ -391,6 +330,65 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
         return TYPE_COMPLETED
     }
 
+    private fun forkSpecifiedCallLog(context: Context, data: ForkCallLogData, isRCS: Boolean): Int {
+        val columnsExists = DataBaseOperator.getInstance(context).columnsExists
+
+        val values = ContentValues()
+        values.put(CallLog.Calls.NUMBER, data.phoneNum)
+        values.put(CallLog.Calls.TYPE, data.type)
+        values.put(CallLog.Calls.NEW, if (data.type == CallLog.Calls.MISSED_TYPE) 0 else 1)
+        values.put(CallLog.Calls.DATE, System.currentTimeMillis())
+        values.put(CallLog.Calls.PHONE_ACCOUNT_ID, data.subId)
+
+        if (isRCS) {
+            values.put(ForkCallLogData.IS_PRIMARY, 1)
+            values.put(ForkCallLogData.SUBJECT, data.subject)
+            values.put(ForkCallLogData.POST_CALL_TEXT, data.postCallText)
+        } else {
+            columnsExists[ForkCallLogData.CALL_TYPE]?.let {
+                values.put(ForkCallLogData.CALL_TYPE, data.callType)
+            }
+            columnsExists[ForkCallLogData.ENCRYPT_CALL]?.let {
+                values.put(ForkCallLogData.ENCRYPT_CALL, data.enryptCall)
+            }
+            columnsExists[ForkCallLogData.FEATURES]?.let {
+                values.put(ForkCallLogData.FEATURES, data.features)
+            }
+        }
+
+        val operation = ContentProviderOperation
+                .newInsert(CallLog.Calls.CONTENT_URI)
+                .withValues(values)
+                .withYieldAllowed(true)
+                .build()
+
+        val operations = ArrayList<ContentProviderOperation>()
+        var bulkSize = 0
+        val quantity = data.quantity
+        for (i in 0 until quantity) {
+            operations.add(operation)
+            ++bulkSize
+            if (mForkCanceled) {
+                return TYPE_CANCELED
+            }
+            if (bulkSize >= FORK_BULK_SIZE || i >= quantity - 1) {
+                try {
+                    context.contentResolver.applyBatch(CallLog.AUTHORITY, operations)
+                } catch (e: RemoteException) {
+                    e.printStackTrace()
+                } catch (e: OperationApplicationException) {
+                    e.printStackTrace()
+                }
+
+                operations.clear()
+                bulkSize = 0
+                val progress = i * 100 / quantity
+                publishProgress(progress, i + 1)
+            }
+        }
+        return TYPE_COMPLETED
+    }
+
     override fun onProgressUpdate(vararg values: Int?) {
         val progress = values[0]
         if (progress!! > mLastProgress) {
@@ -430,4 +428,7 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
 
         private const val FORK_BULK_SIZE = 10
     }
+
+    data class ForkTaskData(val forkType: Int, val forkQuantity: Int = 1,
+                            val forkCallLogData: ForkCallLogData? = null, val includeAvatar: Boolean = false)
 }

@@ -46,19 +46,16 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
     }
 
     private class MyHandler internal constructor(context: Context) : Handler() {
-        private val weakReference: WeakReference<Context> = WeakReference(context)
+        private val weakRef: WeakReference<Context> = WeakReference(context)
 
         override fun handleMessage(msg: Message) {
-            val context = weakReference.get()
-            if (context == null) {
-                Log.i(TAG, "MyHandler failed to handleMessage due to context is NULL")
-                return
-            }
-            when (msg.what) {
-                ForkConstants.VIBRATE_ON_LONG_CLICK -> ForkVibrator.getInstance(context)!!.vibrate(70)
-                else -> {
+            weakRef.get()?.let {
+                when (msg.what) {
+                    ForkConstants.VIBRATE_ON_LONG_CLICK -> ForkVibrator.getInstance(it)!!.vibrate(70)
+                    else -> {
+                    }
                 }
-            }
+            } ?: Log.i(TAG, "MyHandler failed to handleMessage due to context is NULL")
         }
     }
 
@@ -82,7 +79,7 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
         ConfigStateAsyncTask(this).execute(vvmState, state)
     }
 
-    class ConfigStateAsyncTask(presenter:ForkCallLogPresenter) : AsyncTask<String, Void, Void>() {
+    class ConfigStateAsyncTask(presenter: ForkCallLogPresenter) : AsyncTask<String, Void, Void>() {
         private val weakReference: WeakReference<ForkCallLogPresenter> = WeakReference(presenter)
         private var mConfigState = ForkConstants.INVALID_CONFIG_STATE
         private var state: String? = null
@@ -116,12 +113,12 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
             val configUri = VoicemailContract.Status.buildSourceUri(context.packageName)
 
             val contentValues = ContentValues()
-            if (params[0] == VVM_STATE.CONFIGURATION) {
-                contentValues.put(VoicemailContract.Status.CONFIGURATION_STATE, mConfigState)
-            } else if (params[0] == VVM_STATE.DATA) {
-                contentValues.put(VoicemailContract.Status.DATA_CHANNEL_STATE, mConfigState)
-            } else if (params[0] == VVM_STATE.NOTIFICATION) {
-                contentValues.put(VoicemailContract.Status.NOTIFICATION_CHANNEL_STATE, mConfigState)
+            when (params[0]) {
+                VVM_STATE.CONFIGURATION -> contentValues.put(VoicemailContract.Status.CONFIGURATION_STATE, mConfigState)
+                VVM_STATE.DATA -> contentValues.put(VoicemailContract.Status.DATA_CHANNEL_STATE, mConfigState)
+                VVM_STATE.NOTIFICATION -> contentValues.put(VoicemailContract.Status.NOTIFICATION_CHANNEL_STATE, mConfigState)
+                else -> {
+                }
             }
             contentValues.put(VoicemailContract.Status.VOICEMAIL_ACCESS_URI, "tel:888")
             contentValues.put(VoicemailContract.Status.SETTINGS_URI, Uri.decode("http://www.default.config.com"))
