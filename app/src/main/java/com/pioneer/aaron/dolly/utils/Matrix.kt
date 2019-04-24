@@ -113,6 +113,15 @@ object Matrix {
         }
 
     /**
+     * Get a random call duration for [CallLog.Calls.DURATION].
+     * @return a positive random [Int].
+     */
+    val randomDuration:Int
+        get() {
+            return Math.abs(sRandom.nextInt())
+        }
+
+    /**
      * @return get a random "call_type".
      */
     val randomCallType: Int

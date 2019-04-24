@@ -1,7 +1,6 @@
 package com.pioneer.aaron.dolly.fork
 
 import android.content.*
-import android.graphics.Typeface
 import android.net.Uri
 import android.os.AsyncTask
 import android.os.RemoteException
@@ -128,27 +127,29 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
         val operations = ArrayList<ContentProviderOperation>()
         var bulkSize = 0
         for (i in 0 until quantity) {
-            val values = ContentValues()
-            val call_log_type = Matrix.randomType
-            values.put(CallLog.Calls.NEW, if (call_log_type == CallLog.Calls.MISSED_TYPE) 1 else 0)
-            values.put(CallLog.Calls.NUMBER, Matrix.getRandomPhoneNumWithExistingContact(context))
-            values.put(CallLog.Calls.TYPE, call_log_type)
-            values.put(CallLog.Calls.DATE, System.currentTimeMillis())
-            if (isRCS) {
-                values.put(ForkCallLogData.IS_PRIMARY, 1)
-                values.put(ForkCallLogData.SUBJECT, Matrix.randomSubject)
-                values.put(ForkCallLogData.POST_CALL_TEXT, Matrix.randomPostCallText)
-            } else {
-                if (columnsExists[ForkCallLogData.ENCRYPT_CALL] == true) {
-                    values.put(ForkCallLogData.ENCRYPT_CALL, Matrix.randomEncryptCall)
+            val values = ContentValues().apply {
+                val callLogType = Matrix.randomType
+                put(CallLog.Calls.NEW, if (callLogType == CallLog.Calls.MISSED_TYPE) 1 else 0)
+                put(CallLog.Calls.NUMBER, Matrix.getRandomPhoneNumWithExistingContact(context))
+                put(CallLog.Calls.TYPE, callLogType)
+                put(CallLog.Calls.DATE, System.currentTimeMillis())
+                put(CallLog.Calls.DURATION, Matrix.randomDuration)
+                if (isRCS) {
+                    put(ForkCallLogData.IS_PRIMARY, 1)
+                    put(ForkCallLogData.SUBJECT, Matrix.randomSubject)
+                    put(ForkCallLogData.POST_CALL_TEXT, Matrix.randomPostCallText)
+                } else {
+                    if (columnsExists[ForkCallLogData.ENCRYPT_CALL] == true) {
+                        put(ForkCallLogData.ENCRYPT_CALL, Matrix.randomEncryptCall)
+                    }
+                    if (columnsExists[ForkCallLogData.FEATURES] == true) {
+                        put(ForkCallLogData.FEATURES, Matrix.randomFeatures)
+                    }
+                    if (columnsExists[ForkCallLogData.CALL_TYPE] == true) {
+                        put(ForkCallLogData.CALL_TYPE, Matrix.randomCallType)
+                    }
+                    put(CallLog.Calls.PHONE_ACCOUNT_ID, Matrix.randomSubId)
                 }
-                if (columnsExists[ForkCallLogData.FEATURES] == true) {
-                    values.put(ForkCallLogData.FEATURES, Matrix.randomFeatures)
-                }
-                if (columnsExists[ForkCallLogData.CALL_TYPE] == true) {
-                    values.put(ForkCallLogData.CALL_TYPE, Matrix.randomCallType)
-                }
-                values.put(CallLog.Calls.PHONE_ACCOUNT_ID, Matrix.randomSubId)
             }
             operations.add(ContentProviderOperation
                     .newInsert(CallLog.Calls.CONTENT_URI)
