@@ -258,7 +258,7 @@ object Matrix {
     val randomNote: String
         get() = "https://github.com/aaronvon"
 
-    val randonBoolen: Boolean
+    val randomBoolean: Boolean
         get() = sRandom.nextBoolean()
 
     val randomSubId: Int
@@ -278,10 +278,18 @@ object Matrix {
                 loadPredefinedEnglishName(context)
                 setLocales()
             } else {
-                mOrganizations.isEmpty().let { loadPredefinedOrganization(context) }
-                mChineseName.isEmpty().let { loadPredefinedChineseName(context) }
-                mEnglishName.isEmpty().let { loadPredefinedEnglishName(context) }
-                mLocales.isEmpty().let { setLocales() }
+                if (mOrganizations.isEmpty()) {
+                    loadPredefinedOrganization(context)
+                }
+                if (mChineseName.isEmpty()) {
+                    loadPredefinedChineseName(context)
+                }
+                if (mEnglishName.isEmpty()) {
+                    loadPredefinedEnglishName(context)
+                }
+                if (mLocales.isEmpty()) {
+                    setLocales()
+                }
             }
             loadAvatarsFileNames(context)
         }
@@ -323,19 +331,19 @@ object Matrix {
 
     fun preloadContactPhoneNums(context: Context) {
         synchronized(sContactNumberLock) {
-            mNumbers.isEmpty().let {
-                val people = context.contentResolver.query(
+            if (mNumbers.isEmpty()) {
+                val peopleCursor = context.contentResolver.query(
                         ContactsContract.CommonDataKinds.Phone.CONTENT_URI,
                         arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER), null, null, BaseColumns._ID + " LIMIT 500"
                 )
-                people?.let {
-                    val phoneNumColumneIndex = people.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-                    people.moveToFirst()
-                    while (people.moveToNext()) {
-                        mNumbers.add(people.getString(phoneNumColumneIndex))
+                peopleCursor?.let {
+                    val phoneNumColumneIndex = peopleCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                    peopleCursor.moveToFirst()
+                    while (peopleCursor.moveToNext()) {
+                        mNumbers.add(peopleCursor.getString(phoneNumColumneIndex))
                     }
                     mNumberSize = mNumbers.size
-                    people.close()
+                    peopleCursor.close()
                 }
             }
         }
@@ -350,7 +358,9 @@ object Matrix {
     }
 
     fun getRandomPhoneNumWithExistingContact(context: Context): String {
-        mNumbers.isEmpty().let { preloadContactPhoneNums(context) }
+        if (mNumbers.isEmpty()) {
+            preloadContactPhoneNums(context)
+        }
         return if (sRandom.nextBoolean()) {
             randomPhoneNum
         } else {
