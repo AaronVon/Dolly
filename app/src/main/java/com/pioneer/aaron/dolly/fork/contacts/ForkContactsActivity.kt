@@ -19,7 +19,6 @@ import com.pioneer.aaron.dolly.utils.PermissionChecker
 import com.pioneer.aaron.dolly.utils.PreferenceHelper
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity
 import org.jetbrains.anko.*
-import org.jetbrains.anko.appcompat.v7.toolbar
 import org.jetbrains.anko.custom.ankoView
 
 /**

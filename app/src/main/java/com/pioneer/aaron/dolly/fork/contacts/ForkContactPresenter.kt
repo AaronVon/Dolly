@@ -40,10 +40,6 @@ class ForkContactPresenter(context: Context) : IForkContactContract.Presenter {
         return PermissionChecker.checkPermissions(activity)
     }
 
-    override fun loadResInBackground(context: Context) {
-
-    }
-
     override fun forkContacts(context: Context, quantity: Int, allTypes: Boolean, avatarIncluded: Boolean) {
         mForkBinder.startFork(if (allTypes) ForkTask.FORK_TYPE_ALL_TYPE_CONTACT else ForkTask.FORK_TYPE_RANDOM_CONTACT,
                 quantity, avatarIncluded)

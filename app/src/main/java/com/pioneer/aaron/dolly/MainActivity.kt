@@ -36,7 +36,6 @@ class MainActivity : AppCompatActivity(), IMainContract.View {
     override fun onResume() {
         super.onResume()
         mPresenter.checkPermissions(this)
-        mPresenter.loadResInBackground(this)
     }
 
     override fun onDestroy() {

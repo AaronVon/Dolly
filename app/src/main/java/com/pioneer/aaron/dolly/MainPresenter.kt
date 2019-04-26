@@ -71,10 +71,6 @@ class MainPresenter(mContext: Context) : IMainContract.Presenter {
         return PermissionChecker.checkPermissions(activity)
     }
 
-    override fun loadResInBackground(context: Context) {
-        Matrix.LoadResAsyncTask(context).execute(Matrix.LoadResAsyncTask.RES_TYPE_LOAD.ASSET_RES)
-    }
-
     override fun forkRCS(context: Context) {
         val builder = AlertDialog.Builder(context)
         val view = LayoutInflater.from(context).inflate(R.layout.fork_rcs_calllog_layout, null)

@@ -76,7 +76,6 @@ class ForkVvmActivity : SwipeBackActivity(), IForkCallLogContract.View {
         ForkVvmActivityUI().setContentView(this)
 
         mPresenter = ForkCallLogPresenter(this, this)
-        mPresenter.loadResInBackground(this)
         if (mPresenter.checkPermissions(this)) {
             initUI()
         }

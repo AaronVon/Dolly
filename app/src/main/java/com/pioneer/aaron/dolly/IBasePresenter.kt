@@ -10,7 +10,5 @@ import android.content.Context
 interface IBasePresenter {
     fun checkPermissions(activity: Activity): Boolean
 
-    fun loadResInBackground(context: Context)
-
     fun onDestroy(context: Context)
 }

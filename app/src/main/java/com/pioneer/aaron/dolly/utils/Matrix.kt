@@ -270,7 +270,7 @@ object Matrix {
      * @param context
      * @param hardReset
      */
-    fun loadResources(context: Context, hardReset: Boolean) {
+    fun loadResources(context: Context, hardReset: Boolean = true) {
         synchronized(sLock) {
             if (hardReset) {
                 loadPredefinedOrganization(context)
@@ -337,10 +337,10 @@ object Matrix {
                         arrayOf(ContactsContract.CommonDataKinds.Phone.NUMBER), null, null, BaseColumns._ID + " LIMIT 500"
                 )
                 peopleCursor?.let {
-                    val phoneNumColumneIndex = peopleCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
+                    val phoneNumColumnIndex = peopleCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
                     peopleCursor.moveToFirst()
                     while (peopleCursor.moveToNext()) {
-                        mNumbers.add(peopleCursor.getString(phoneNumColumneIndex))
+                        mNumbers.add(peopleCursor.getString(phoneNumColumnIndex))
                     }
                     mNumberSize = mNumbers.size
                     peopleCursor.close()
@@ -429,28 +429,5 @@ object Matrix {
         }
 
         return avatarBytes
-    }
-
-    class LoadResAsyncTask(context: Context) : AsyncTask<Int, Void, Void>() {
-        private val weakReference: WeakReference<Context> = WeakReference(context)
-
-        interface RES_TYPE_LOAD {
-            companion object {
-                const val CONTACT_NUMBRES = 0
-                const val ASSET_RES = 1
-            }
-        }
-
-        override fun doInBackground(vararg p0: Int?): Void? {
-            weakReference.get()?.let {
-                when (p0[0]) {
-                    RES_TYPE_LOAD.CONTACT_NUMBRES -> Matrix.preloadContactPhoneNums(it)
-                    RES_TYPE_LOAD.ASSET_RES -> Matrix.loadResources(it, true)
-                    else -> {
-                    }
-                }
-            } ?: Log.e(TAG, "LoadResAsyncTask: Failed to load res due to context is NULL")
-            return null
-        }
     }
 }

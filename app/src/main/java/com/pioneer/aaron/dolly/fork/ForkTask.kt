@@ -209,7 +209,7 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
                     .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
                     .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, Matrix.randomPhoneNum)
                     .build())
-            if (Matrix.randonBoolen) {
+            if (Matrix.randomBoolean) {
                 val size = Matrix.getRandomInt(CONTACT_POSSIBLE_NUM_COUNT)
                 for (j in 0 until size) {
                     operations.add(ContentProviderOperation
@@ -305,7 +305,7 @@ class ForkTask(private val mForkListener: IForkListener, context: Context) : Asy
                             .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
                             .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO, avatarBytes)
                             .build())
-                } ?: run { Log.d(TAG, "Failed to set avatar due to null byte[]") }
+                } ?: Log.d(TAG, "Failed to set avatar due to null byte[]")
             }
 
             ++bulkSize

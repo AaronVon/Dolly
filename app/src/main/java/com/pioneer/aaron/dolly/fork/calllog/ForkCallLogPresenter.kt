@@ -149,11 +149,6 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
         return PermissionChecker.checkPermissions(activity)
     }
 
-    override fun loadResInBackground(context: Context) {
-        // load existing contact phone number
-        Matrix.LoadResAsyncTask(context).execute(Matrix.LoadResAsyncTask.RES_TYPE_LOAD.CONTACT_NUMBRES)
-    }
-
     override fun onDestroy(context: Context) {
         try {
             context.unbindService(mServiceConnection)

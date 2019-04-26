@@ -12,6 +12,7 @@
 
     <application
         android:allowBackup="true"
+        android:name=".ForkApplication"
         android:icon="@mipmap/fork_icon"
         android:label="@string/app_name"
         android:supportsRtl="true"
