@@ -7,6 +7,7 @@ import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
 import android.text.InputType
 import android.text.TextUtils
+import android.util.Log
 import android.view.View
 import android.view.ViewManager
 import android.widget.Button
@@ -15,8 +16,12 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import anko.immersiveToolbar
 import com.pioneer.aaron.dolly.R
+import com.pioneer.aaron.dolly.utils.Matrix
 import com.pioneer.aaron.dolly.utils.PermissionChecker
 import com.pioneer.aaron.dolly.utils.PreferenceHelper
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.withLock
 import me.yokeyword.fragmentation_swipeback.SwipeBackActivity
 import org.jetbrains.anko.*
 import org.jetbrains.anko.custom.ankoView
@@ -44,7 +49,7 @@ class ForkContactsActivity : SwipeBackActivity(), IForkContactContract.View {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         anko.makeImmersive(window)
-        ForkcontactsActivityUI().setContentView(this)
+        ForkContactsActivityUI().setContentView(this)
 
         mPresenter = ForkContactPresenter(this)
         if (mPresenter.checkPermissions(this)) {
@@ -111,7 +116,7 @@ class ForkContactsActivity : SwipeBackActivity(), IForkContactContract.View {
         super.onDestroy()
     }
 
-    inner class ForkcontactsActivityUI : AnkoComponent<ForkContactsActivity> {
+    inner class ForkContactsActivityUI : AnkoComponent<ForkContactsActivity> {
         inline fun ViewManager.textInputEditText(theme: Int = 0, init: TextInputEditText.() -> Unit) = ankoView({ TextInputEditText(it) }, theme, init)
 
         inline fun ViewManager.textInputLayout(theme: Int = 0, init: TextInputLayout.() -> Unit) = ankoView(::TextInputLayout, theme, init)
@@ -142,6 +147,13 @@ class ForkContactsActivity : SwipeBackActivity(), IForkContactContract.View {
                                 checkBox {
                                     id = R.id.fork_contact_avatar
                                     text = resources.getString(R.string.fork_contacts_avatar)
+                                    setOnClickListener {
+                                        GlobalScope.launch {
+                                            Matrix.AVATAR_MUTEX_LOCK.withLock {
+                                                Matrix.preloadAvatars(context)
+                                            }
+                                        }
+                                    }
                                 }.lparams(width = matchParent)
                                 button {
                                     id = R.id.start_fork_contact_btn

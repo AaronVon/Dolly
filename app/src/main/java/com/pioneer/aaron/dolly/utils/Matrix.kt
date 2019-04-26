@@ -3,18 +3,17 @@ package com.pioneer.aaron.dolly.utils
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.AsyncTask
 import android.provider.BaseColumns
 import android.provider.CallLog
 import android.provider.ContactsContract
 import android.text.TextUtils
 import android.util.Log
 import com.pioneer.aaron.dolly.R
+import kotlinx.coroutines.sync.Mutex
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStreamReader
-import java.lang.ref.WeakReference
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -116,7 +115,7 @@ object Matrix {
      * Get a random call duration for [CallLog.Calls.DURATION].
      * @return a positive random [Int].
      */
-    val randomDuration:Int
+    val randomDuration: Int
         get() {
             return Math.abs(sRandom.nextInt())
         }
@@ -394,7 +393,55 @@ object Matrix {
 
     }
 
+    private var AVATARS_CACHE = ArrayList<ByteArray>()
+
+    /**
+     * A flag to indicate if [AVATARS_CACHE] has been loaded.
+     */
+    private var mAvatarsPreloaded = false
+
+    /**
+     * [Mutex] to lock avatar preload process.
+     */
+    val AVATAR_MUTEX_LOCK = Mutex()
+
+    /**
+     * Preload avatars in background, to boost fork contacts process.
+     * <p>To cache all avatars, it costs around extra 7MB ROM.</p>
+     *
+     * @param context
+     */
+    fun preloadAvatars(context: Context) {
+        if (mAvatarsPreloaded) {
+            return
+        }
+        mAvatarsPreloaded = true
+        if (mAvatarFileNames.isEmpty()) {
+            loadAvatarsFileNames(context)
+        }
+        for (fileName in mAvatarFileNames) {
+            generateAvatar(context)?.let {
+                AVATARS_CACHE.add(it)
+            }
+        }
+    }
+
     fun getRandomAvatar(context: Context): ByteArray? {
+        if (mAvatarFileNames.isEmpty()) {
+            loadAvatarsFileNames(context)
+        }
+        return if (AVATARS_CACHE.isNotEmpty()) {
+            AVATARS_CACHE[sRandom.nextInt(AVATARS_CACHE.size)]
+        } else {
+            val avatar = generateAvatar(context)
+            if (avatar != null) {
+                AVATARS_CACHE.add(avatar)
+            }
+            avatar
+        }
+    }
+
+    private fun generateAvatar(context: Context): ByteArray? {
         var avatarBytes: ByteArray? = null
         var avatar: Bitmap? = null
         var avatarFileName = ""
