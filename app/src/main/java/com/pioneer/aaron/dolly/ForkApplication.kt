@@ -1,10 +1,10 @@
 package com.pioneer.aaron.dolly
 
+import android.Manifest
 import android.app.Application
-import android.util.Log
 import com.pioneer.aaron.dolly.utils.Matrix
+import com.pioneer.aaron.dolly.utils.isPermissionsGranted
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 
 class ForkApplication : Application() {
@@ -16,7 +16,10 @@ class ForkApplication : Application() {
         super.onCreate()
         GlobalScope.launch {
             launch {
-                Matrix.preloadContactPhoneNums(applicationContext)
+                // this is the only chance to preloadContactPhoneNums, for now.
+                if (isPermissionsGranted(applicationContext, listOf(Manifest.permission.WRITE_CONTACTS))) {
+                    Matrix.preloadContactPhoneNums(applicationContext)
+                }
             }
             launch {
                 Matrix.loadResources(applicationContext)

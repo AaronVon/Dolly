@@ -17,22 +17,19 @@ import android.widget.CheckBox
 import android.widget.EditText
 import android.widget.RadioButton
 import android.widget.RadioGroup
-
 import com.pioneer.aaron.dolly.fork.ForkService
 import com.pioneer.aaron.dolly.fork.ForkTask
 import com.pioneer.aaron.dolly.fork.calllog.ForkCallLogData
 import com.pioneer.aaron.dolly.utils.ForkConstants
 import com.pioneer.aaron.dolly.utils.ForkVibrator
-import com.pioneer.aaron.dolly.utils.Matrix
-import com.pioneer.aaron.dolly.utils.PermissionChecker
-
 import java.lang.ref.WeakReference
 
 /**
  * Created by Aaron on 4/18/17.
  */
 
-class MainPresenter(mContext: Context) : IMainContract.Presenter {
+class MainPresenter(mActivity: Activity, mView: IMainContract.View) : IMainContract.Presenter {
+    private val mContext = mActivity
     private lateinit var mForkBinder: ForkService.ForkBinder
     private val mHandler: MainHandler
 
@@ -61,14 +58,12 @@ class MainPresenter(mContext: Context) : IMainContract.Presenter {
     }
 
     init {
+        mView.checkPermission(mActivity)
+
         val intent = Intent(mContext, ForkService::class.java)
         mContext.startService(intent)
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
         mHandler = MainHandler(mContext)
-    }
-
-    override fun checkPermissions(activity: Activity): Boolean {
-        return PermissionChecker.checkPermissions(activity)
     }
 
     override fun forkRCS(context: Context) {

@@ -7,17 +7,15 @@ import android.content.Intent
 import android.content.ServiceConnection
 import android.os.IBinder
 import android.util.Log
-
 import com.pioneer.aaron.dolly.fork.ForkService
 import com.pioneer.aaron.dolly.fork.ForkTask
-import com.pioneer.aaron.dolly.utils.PermissionChecker
 
 /**
  * Created by Aaron on 4/30/17.
  */
 
-class ForkContactPresenter(context: Context) : IForkContactContract.Presenter {
-
+class ForkContactPresenter(mActivity: Activity, mView: IForkContactContract.View) : IForkContactContract.Presenter {
+    private val mContext: Context = mActivity
     private lateinit var mForkBinder: ForkService.ForkBinder
     private val mServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(name: ComponentName, service: IBinder) {
@@ -31,13 +29,10 @@ class ForkContactPresenter(context: Context) : IForkContactContract.Presenter {
     }
 
     init {
-        val intent = Intent(context, ForkService::class.java)
-        context.startService(intent)
-        context.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
-    }
-
-    override fun checkPermissions(activity: Activity): Boolean {
-        return PermissionChecker.checkPermissions(activity)
+        mView.checkPermission(mActivity)
+        val intent = Intent(mContext, ForkService::class.java)
+        mContext.startService(intent)
+        mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
     }
 
     override fun forkContacts(context: Context, quantity: Int, allTypes: Boolean, avatarIncluded: Boolean) {

@@ -7,7 +7,6 @@ import android.support.design.widget.TextInputEditText
 import android.support.design.widget.TextInputLayout
 import android.text.InputType
 import android.text.TextUtils
-import android.util.Log
 import android.view.View
 import android.view.ViewManager
 import android.widget.Button
@@ -51,8 +50,8 @@ class ForkContactsActivity : SwipeBackActivity(), IForkContactContract.View {
         anko.makeImmersive(window)
         ForkContactsActivityUI().setContentView(this)
 
-        mPresenter = ForkContactPresenter(this)
-        if (mPresenter.checkPermissions(this)) {
+        mPresenter = ForkContactPresenter(this, this)
+        if (checkPermission(this)) {
             initUI()
         }
     }

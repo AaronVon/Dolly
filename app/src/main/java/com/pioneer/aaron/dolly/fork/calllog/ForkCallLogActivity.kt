@@ -143,7 +143,7 @@ class ForkCallLogActivity : SwipeBackActivity(), IForkCallLogContract.View {
         ForkCallLogActivityUI().setContentView(this)
 
         mPresenter = ForkCallLogPresenter(this, this)
-        if (mPresenter.checkPermissions(this)) {
+        if (checkPermission(this)) {
             initUI()
         }
     }

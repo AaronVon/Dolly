@@ -8,7 +8,5 @@ import android.content.Context
  */
 
 interface IBasePresenter {
-    fun checkPermissions(activity: Activity): Boolean
-
     fun onDestroy(context: Context)
 }

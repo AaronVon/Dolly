@@ -30,12 +30,7 @@ class MainActivity : AppCompatActivity(), IMainContract.View {
         anko.makeImmersive(window)
 
         MainActivityUI().setContentView(this)
-        mPresenter = MainPresenter(this)
-    }
-
-    override fun onResume() {
-        super.onResume()
-        mPresenter.checkPermissions(this)
+        mPresenter = MainPresenter(this, this)
     }
 
     override fun onDestroy() {

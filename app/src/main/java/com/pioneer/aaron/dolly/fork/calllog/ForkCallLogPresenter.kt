@@ -15,8 +15,6 @@ import com.pioneer.aaron.dolly.fork.ForkService
 import com.pioneer.aaron.dolly.fork.ForkTask
 import com.pioneer.aaron.dolly.utils.ForkConstants
 import com.pioneer.aaron.dolly.utils.ForkVibrator
-import com.pioneer.aaron.dolly.utils.Matrix
-import com.pioneer.aaron.dolly.utils.PermissionChecker
 import java.lang.ref.WeakReference
 import java.util.*
 
@@ -24,7 +22,8 @@ import java.util.*
  * Created by Aaron on 4/28/17.
  */
 
-class ForkCallLogPresenter(private val mContext: Context, private val mView: IForkCallLogContract.View) : IForkCallLogContract.Presenter {
+class ForkCallLogPresenter(mActivity: Activity, private val mView: IForkCallLogContract.View) : IForkCallLogContract.Presenter {
+    private val mContext: Context = mActivity
     private val mHandler: MyHandler
     private lateinit var mForkBinder: ForkService.ForkBinder
 
@@ -39,6 +38,7 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
     }
 
     init {
+        mView.checkPermission(mActivity)
         val intent = Intent(mContext, ForkService::class.java)
         mContext.startService(intent)
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE)
@@ -143,10 +143,6 @@ class ForkCallLogPresenter(private val mContext: Context, private val mView: IFo
 
     override fun toast(msg: String) {
         mView.toast(msg)
-    }
-
-    override fun checkPermissions(activity: Activity): Boolean {
-        return PermissionChecker.checkPermissions(activity)
     }
 
     override fun onDestroy(context: Context) {
